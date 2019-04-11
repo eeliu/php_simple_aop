@@ -75,7 +75,7 @@ abstract class ClassFile
 
     abstract function handleClassLeaveMethodNode(&$node,&$info);
 
-    public function handleReturnNode(&$node)
+    public function markHasReturn(&$node)
     {
         $this->hasRet = true;
     }

@@ -5,7 +5,7 @@
  * Time: 4:41 PM
  */
 
-namespace pinpoint\Common;
+namespace pinpoint\test;
 
 use pinpoint\Common\ClassFile;
 use PhpParser\BuilderFactory;

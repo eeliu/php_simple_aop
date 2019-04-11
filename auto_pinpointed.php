@@ -1,7 +1,7 @@
 <?php
 
 namespace pinpoint;
-require PINPOINT_VENDER_AUTOLOADR_FULL_PAPP;
+require AUTOLOAD_FILE_ALIAS;
 
 use pinpoint\Common\PinpointDriver;
 

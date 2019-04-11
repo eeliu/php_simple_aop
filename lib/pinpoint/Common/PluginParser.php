@@ -49,7 +49,7 @@ class PluginParser
     /**
      * @param mixed $namespace
      */
-    public function setNamespace($namespace): void
+    public function setNamespace($namespace)
     {
         $this->namespace = $namespace;
     }
@@ -65,7 +65,7 @@ class PluginParser
     /**
      * @param mixed $className
      */
-    public function setClassName($className): void
+    public function setClassName($className)
     {
         $this->className = $className;
     }

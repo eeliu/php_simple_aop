@@ -80,7 +80,10 @@ class CodeVisitor extends NodeVisitorAbstract
         }
         elseif ( $node instanceof Node\Stmt\Return_)
         {
-            $this->ospIns->shadowClass->handleReturnNode($node);
+            $this->ospIns->shadowClass->markHasReturn($node);
+        }
+        elseif ($node instanceof Node\Expr\Yield_){
+            $this->ospIns->shadowClass->markHasReturn($node);
         }
     }
 

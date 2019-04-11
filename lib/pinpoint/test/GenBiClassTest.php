@@ -5,7 +5,7 @@
  * Time: 3:27 PM
  */
 
-namespace pinpoint\Common;
+namespace pinpoint\test;
 require_once __DIR__. '/../../vendor/autoload.php';
 
 use pinpoint\Common\GenRequiredBIFile;

@@ -5,7 +5,7 @@
  * Time: 4:27 PM
  */
 
-namespace pinpoint\Common;
+namespace pinpoint\test;
 require_once __DIR__. '/../../vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use pinpoint\Common\Util;

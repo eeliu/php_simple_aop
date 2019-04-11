@@ -45,6 +45,8 @@ class OriginClassFile extends ClassFile
             $node->flags = $node->flags & ( ~(Node\Stmt\Class_::MODIFIER_FINAL) );
         }
 
+
+
     }
 
     public function handleClassLeaveMethodNode(&$node,&$info)
@@ -54,6 +56,12 @@ class OriginClassFile extends ClassFile
         {
             $node->flags = $node->flags &(~Node\Stmt\Class_::MODIFIER_PRIVATE);
         }
+
+        if($node->flags & Node\Stmt\Class_::MODIFIER_FINAL)
+        {
+            $node->flags = $node->flags &(~Node\Stmt\Class_::MODIFIER_FINAL);
+        }
+
     }
 
 

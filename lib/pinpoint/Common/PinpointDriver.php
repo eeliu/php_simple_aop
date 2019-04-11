@@ -29,7 +29,7 @@ class PinpointDriver
     public static function getInstance(){
 
         if (!self::$instance) {
-            $Cfg  = require PINPINT__AOP_CONF;
+            $Cfg  = require PINPOINT_AOP_CONF;
             self::$instance = new static($Cfg);
         }
 

@@ -121,7 +121,7 @@ class OrgClassParse
     }
 
 
-    public function generateAllClass():array
+    public function generateAllClass()
     {
         /// ast to source
         return $this->classIndex;

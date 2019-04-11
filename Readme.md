@@ -6,7 +6,7 @@
 ```Json
 {
 "require": {
-        "eeliu/php_simple_aop": "master"
+        "eeliu/php_simple_aop": "dev"
     },
     "repositories": [
         {
