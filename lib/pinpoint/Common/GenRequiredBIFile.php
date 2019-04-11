@@ -44,17 +44,16 @@ class GenRequiredBIFile
             $this->useArray[] = $np;
         }
 
-//        $funcVar = new Node\Arg(new Node\Scalar\MagicConst\Function_());
-
         $funcVar = new Node\Arg(new Node\Scalar\String_($funcName));
 
         $selfVar = new Node\Arg(new Node\Expr\ConstFetch(new Node\Name('null')));
 
         $thisFunc =  $this->factory->function($funcName)->addParam(
             $this->factory->param('args')->makeVariadic());
-
+        $varName = $namespace.'_'.$className.'_'.$funcName.'_var';
+        $retName = $namespace.'_'.$className.'_'.$funcName.'_ret';
         // $var = new commPlugins(__METHOD__,this,$args)
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable("var"),
+        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
             $this->factory->new($className,[$funcVar,$selfVar,new Node\Expr\Variable("args")])));
         $thisFunc->addStmt($newPluginsStm);
 
@@ -65,12 +64,12 @@ class GenRequiredBIFile
         {
             // $var->onBefore();
             $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable("var"), "onBefore"));
+                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
         }
 
         // $ret  = call_user_func_array("function",parater)
         $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
-                new Node\Expr\Variable("ret"),
+                new Node\Expr\Variable($retName),
                 new Node\Expr\FuncCall(
                     new Node\Name("call_user_func_array"),
                     [
@@ -86,15 +85,15 @@ class GenRequiredBIFile
         {
             $tryBlock[] = new Node\Stmt\Expression(
                 $this->factory->methodCall(
-                    new Node\Expr\Variable("var"),
+                    new Node\Expr\Variable($varName),
                     "onEnd",
-                    [new Node\Expr\Variable('ret')]
+                    [new Node\Expr\Variable($retName)]
                 )
             );
         }
 
         /// return $var;
-        $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable('ret'));
+        $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable($retName));
 
         $expArgs = [];
         $expArgs[] = new Node\Arg(new Node\Expr\Variable('e')) ;
@@ -102,7 +101,7 @@ class GenRequiredBIFile
         if ($mode & PluginParser::EXCEPTION) {
 
             $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable("var"),
+                $this->factory->methodCall(new Node\Expr\Variable($varName),
                     "onException",$expArgs));
 
         }
@@ -144,8 +143,11 @@ class GenRequiredBIFile
 
         $thisMethod = $this->factory->method($thisFuncName)->addParam($this->factory->param('args')->makeByRef()->makeVariadic());
 
+        $varName = $namespace.'_'.$className.'_'.$thisFuncName.'_var';
+        $retName = $namespace.'_'.$className.'_'.$thisFuncName.'_ret';
+
         // $var = new commPlugins(__METHOD__,this,$args)
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable("var"),
+        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
             $this->factory->new($className,[$funcVar,$selfVar,new Node\Expr\Variable("args")])));
         $thisMethod->addStmt($newPluginsStm);
 
@@ -157,12 +159,12 @@ class GenRequiredBIFile
         if ($mode & PluginParser::BEFORE)
         {
             $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable("var"), "onBefore"));
+                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
         }
 
         // $ret  = call_user_func_array
         $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
-            new Node\Expr\Variable("ret"),
+            new Node\Expr\Variable($retName),
             new Node\Expr\FuncCall(
                 new Node\Name("call_user_func_array"),
                 [
@@ -183,15 +185,15 @@ class GenRequiredBIFile
         {
             $tryBlock[] = new Node\Stmt\Expression(
                 $this->factory->methodCall(
-                    new Node\Expr\Variable("var"),
+                    new Node\Expr\Variable($varName),
                     "onEnd",
-                    [new Node\Expr\Variable('ret')]
+                    [new Node\Expr\Variable($retName)]
                 )
             );
         }
 
         /// return $var;
-        $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable('ret'));
+        $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable($retName));
 
         $expArgs = [];
         $expArgs[] = new Node\Arg(new Node\Expr\Variable('e')) ;
@@ -199,7 +201,7 @@ class GenRequiredBIFile
         if ($mode & PluginParser::EXCEPTION) {
 
             $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable("var"),
+                $this->factory->methodCall(new Node\Expr\Variable($varName),
                     "onException",$expArgs));
 
         }

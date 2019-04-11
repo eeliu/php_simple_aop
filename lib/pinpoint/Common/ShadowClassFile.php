@@ -122,18 +122,21 @@ class ShadowClassFile extends ClassFile
             $thisMethod->setReturnType($node->returnType);
         }
 
+        $varName = $namespace.'_'.$className.'_'.$thisFuncName.'_var';
+        $retName = $namespace.'_'.$className.'_'.$thisFuncName.'_ret';
+
         /// $var = new CommonPlugins(__FUNCTION__,self,$p);
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable("var"),
+        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
             $this->factory->new($className, $pluginArgs)));
 
         $thisMethod->addStmt($newPluginsStm);
 
-        $newVar = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable("ret"),
+        $newVar = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($retName),
             new Node\Expr\ConstFetch(new Node\Name('null'))));
         $thisMethod->addStmt($newVar);
 
         /// $var = new CommonPlugins(__FUNCTION__,self,$p);
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable("var"),
+        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
             $this->factory->new($className, $pluginArgs)));
 
         $tryBlock = [];
@@ -143,13 +146,13 @@ class ShadowClassFile extends ClassFile
         {
             // $var->onBefore();
             $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable("var"), "onBefore"));
+                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
         }
 
         if ($this->hasRet) {
             /// $ret = paraent::$thisFuncName();
             $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
-                new Node\Expr\Variable("ret"),
+                new Node\Expr\Variable($retName),
                 new Node\Expr\StaticCall(new Node\Name("parent"),
                     new Node\Identifier($thisFuncName),
                     ShadowClassFile::convertParamsName2Arg($node->params))));
@@ -159,15 +162,15 @@ class ShadowClassFile extends ClassFile
             {
                 $tryBlock[] = new Node\Stmt\Expression(
                     $this->factory->methodCall(
-                        new Node\Expr\Variable("var"),
+                        new Node\Expr\Variable($varName),
                         "onEnd",
-                        [new Node\Expr\Variable('ret')]
+                        [new Node\Expr\Variable($retName)]
                     )
                 );
             }
 
             /// return $var;
-            $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable('ret'));
+            $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable($retName));
 
         } else {
             /// paraent::$thisFuncName();
@@ -182,9 +185,9 @@ class ShadowClassFile extends ClassFile
             {
                 $tryBlock[] = new Node\Stmt\Expression(
                     $this->factory->methodCall(
-                        new Node\Expr\Variable("var"),
+                        new Node\Expr\Variable($varName),
                         "onEnd",
-                        [new Node\Expr\Variable('ret')]
+                        [new Node\Expr\Variable($retName)]
                     )
                 );
             }
@@ -196,7 +199,7 @@ class ShadowClassFile extends ClassFile
         if ($mode & PluginParser::EXCEPTION) {
 
             $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable("var"),
+                $this->factory->methodCall(new Node\Expr\Variable($varName),
                     "onException",$expArgs));
 
         }

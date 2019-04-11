@@ -6,12 +6,12 @@
 ```Json
 {
 "require": {
-        "eeliu/pinpoint-php-aop": "master"
+        "eeliu/php_simple_aop": "master"
     },
     "repositories": [
         {
             "type": "path",
-            "url": "/home/liumingyi/git/eeliu/pinpoint-php-aop/",
+            "url": "/your loacation of php_simple_aop/",
             "options": {
                 "symlink": true
             }
