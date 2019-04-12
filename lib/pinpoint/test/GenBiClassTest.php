@@ -6,7 +6,8 @@
  */
 
 namespace pinpoint\test;
-require_once __DIR__. '/../../vendor/autoload.php';
+
+require_once 'bootstrap.php';
 
 use pinpoint\Common\GenRequiredBIFile;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,10 @@ class GenRequiredBIFileTest extends TestCase
         $bi->extendsFunc("curl_init",[7,'pinpiont','curlPlugins']);
         $bi->extendsFunc("curl_setopt",[7,'pinpiont','curlSetoptPlugins']);
 
-        $bi->loadToFile("./required.php");
+        $bi->loadToFile("required_test.php");
+        self::assertFileExists("required_test.php");
+        self::assertFileEquals("required.php","required_test.php");
+        unlink("required_test.php");
     }
 }
 

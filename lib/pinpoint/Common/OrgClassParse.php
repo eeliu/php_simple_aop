@@ -25,13 +25,12 @@ class OrgClassParse
     private $traverser;
     private $printer;
 
-    public $cfg;
-
     private $originClassNode;
 
     private $rawOrigStmts;
 
     public $classIndex = [];
+    public $requiredFile;
 
     public $className;// app\foo\DBManager
 
@@ -46,11 +45,10 @@ class OrgClassParse
     public $shadowClassPath;
 
 
-    public function __construct($fullPath, $cl, $info, &$cfg)
+    public function __construct($fullPath, $cl, $info)
     {
         assert(file_exists($fullPath));
 
-        $this->cfg = &$cfg;
         $this->className = $cl;
         $this->mFuncAr = $info;
         $this->originFile = $fullPath;
@@ -98,7 +96,7 @@ class OrgClassParse
     /// convert $node to file
     public function orgClassNodeDoneCB($node,$fullName)
     {
-        $fullPath = $this->cfg['cache_dir'].'/'.str_replace('\\','/',$fullName).'.php';
+        $fullPath = AOP_CACHE_DIR.'/'.str_replace('\\','/',$fullName).'.php';
         // try to keep blank and filenu
         $orgClassContext = $this->printer->printFormatPreserving(
             $node,
@@ -113,11 +111,10 @@ class OrgClassParse
     public function shadowClassNodeDoneCB(&$node,$fullName)
     {
 
-        $fullPath = $this->cfg['cache_dir'].'/'.str_replace('\\','/',$fullName).'.php';
+        $fullPath = AOP_CACHE_DIR.'/'.str_replace('\\','/',$fullName).'.php';
         $context= $this->printer->prettyPrintFile(array($node));
         Util::flushStr2File($context,$fullPath);
         $this->classIndex[$fullName] = $fullPath;
-
     }
 
 

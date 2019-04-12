@@ -6,7 +6,8 @@
  */
 
 namespace pinpoint\test;
-require_once __DIR__. '/../../vendor/autoload.php';
+require_once 'bootstrap.php';
+
 use PHPUnit\Framework\TestCase;
 use pinpoint\Common\Util;
 use Plugins\CommonPlugin;

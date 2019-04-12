@@ -56,9 +56,9 @@ class CodeVisitor extends NodeVisitorAbstract
                 }
             }
 
-            $reqFileName = $this->ospIns->cfg['cache_dir'].'/'.str_replace('\\','/', $this->curClass).'_required.php';
-
+            $reqFileName = str_replace('\\','/', $this->curClass).'_required.php';
             $reqFile->loadToFile($reqFileName);
+            $this->ospIns->requiredFile = $reqFileName;
             $this->ospIns->originClass->addRequiredFile($reqFileName);
         }
         elseif ($node instanceof Node\Stmt\Class_){
@@ -72,7 +72,17 @@ class CodeVisitor extends NodeVisitorAbstract
 
             $this->ospIns->shadowClass->handleEnterClassNode($node);
             $this->ospIns->originClass->handleEnterClassNode($node);
+        }
+        elseif( $node instanceof Node\Stmt\Trait_){
+            if( $this->curNamespace.'\\'.$node->name->toString() != $this->curClass)
+            {
+                // ignore uncared
+                echo "NodeTraverser::DONT_TRAVERSE_CHILDREN @".$this->curClass;
+                return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+            }
 
+            $this->ospIns->originClass->handleEnterTraitNode($node);
+            $this->ospIns->shadowClass->handleEnterTraitNode($node);
         }elseif ($node instanceof Node\Stmt\ClassMethod)
         {
             $this->ospIns->shadowClass->handleClassEnterMethodNode($node);
@@ -94,8 +104,8 @@ class CodeVisitor extends NodeVisitorAbstract
             $func = trim( $node->name->toString());
             if(array_key_exists($func,$this->ospIns->mFuncAr))
             {
-                $this->ospIns->shadowClass->handleClassLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
-                $this->ospIns->originClass->handleClassLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
+                $this->ospIns->shadowClass->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
+                $this->ospIns->originClass->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
                 /// remove the func
                 unset( $this->ospIns->mFuncAr[$func] );
             }
@@ -114,9 +124,14 @@ class CodeVisitor extends NodeVisitorAbstract
             return $this->ospIns->originClass->handleLeaveNamespace($node);
         }
         elseif ($node instanceof Node\Stmt\Class_){
+
             $this->ospIns->originClass->handleLeaveClassNode($node);
 
-        }elseif ($node instanceof Node\Stmt\UseUse){
+        }elseif ($node instanceof Node\Stmt\Trait_){
+
+            $this->ospIns->originClass->handleLeaveTraitNode($node);
+        }
+        elseif ($node instanceof Node\Stmt\UseUse){
             /// scene : use \PDO
             ///        replace \PDO to \Np\PDO
             if( in_array($node->name->toString(),$this->builtInAr))
@@ -132,12 +147,12 @@ class CodeVisitor extends NodeVisitorAbstract
         $node = $this->ospIns->originClass->handleAfterTravers($nodes,
             $this->ospIns->mFuncAr);
 
-        $this->ospIns->orgClassNodeDoneCB($node,$this->ospIns->originClass->className);
+        $this->ospIns->orgClassNodeDoneCB($node,$this->ospIns->originClass->name);
 
         $node = $this->ospIns->shadowClass->handleAfterTravers($nodes,
             $this->ospIns->mFuncAr);
 
-        $this->ospIns->shadowClassNodeDoneCB($node,$this->ospIns->shadowClass->className);
+        $this->ospIns->shadowClassNodeDoneCB($node,$this->ospIns->shadowClass->fileName);
 
     }
 

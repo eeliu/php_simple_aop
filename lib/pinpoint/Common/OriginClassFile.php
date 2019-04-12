@@ -39,17 +39,32 @@ class OriginClassFile extends ClassFile
         $node->name = new Node\Identifier($className);
 
         $this->className = $this->namespace.'\\'.$className;
+        $this->name = $this->className;
+
         if($node->flags & Node\Stmt\Class_::MODIFIER_FINAL)
         {
             /// remove FINAL flag
             $node->flags = $node->flags & ( ~(Node\Stmt\Class_::MODIFIER_FINAL) );
         }
-
-
-
     }
 
-    public function handleClassLeaveMethodNode(&$node,&$info)
+    /**
+     * rename trait Foo{} => trait Proxed_Foo{}
+     * @param $node
+     */
+    public function handleLeaveTraitNode(&$node)
+    {
+        assert($node instanceof Node\Stmt\Trait_);
+        $className =$this->prefix.$node->name->toString();
+
+        $node->name = new Node\Identifier($className);
+
+        $this->traitName = $this->namespace.'\\'.$className;
+        $this->name = $this->traitName;
+    }
+
+
+    public function handleLeaveMethodNode(&$node,&$info)
     {
         assert($node instanceof Node\Stmt\ClassMethod);
         if($node->flags &  Node\Stmt\Class_::MODIFIER_PRIVATE)
@@ -122,7 +137,8 @@ class OriginClassFile extends ClassFile
         {
             $expression= new Node\Stmt\Expression(
                 new Node\Expr\Include_(
-                    new Node\Scalar\String_($fullPath),Node\Expr\Include_::TYPE_REQUIRE
+                    new Node\Expr\BinaryOp\Concat(new Node\Expr\ConstFetch( new Node\Name("AOP_CACHE_DIR")),new Node\Scalar\String_($fullPath))
+                    ,Node\Expr\Include_::TYPE_REQUIRE
                 ), ['startTokenPos'=>$nodes->getStartTokenPos(),'endTokenPos'=> $nodes->getEndTokenPos()]
             );
             $nodes->stmts[]  = $expression;

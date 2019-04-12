@@ -3,7 +3,7 @@
 
 namespace pinpoint\test;
 
-trait TestTrait
+trait Proxied_TestTrait
 {
     function getReturnType()
     {
@@ -16,4 +16,4 @@ trait TestTrait
 
     }
 
-}
+}require AOP_CACHE_DIR . 'pinpoint/test/TestTrait_required.php';

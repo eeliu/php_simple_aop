@@ -50,8 +50,8 @@ class GenRequiredBIFile
 
         $thisFunc =  $this->factory->function($funcName)->addParam(
             $this->factory->param('args')->makeVariadic());
-        $varName = $namespace.'_'.$className.'_'.$funcName.'_var';
-        $retName = $namespace.'_'.$className.'_'.$funcName.'_ret';
+        $varName = $className.'_'.$funcName.'_var';
+        $retName = $className.'_'.$funcName.'_ret';
         // $var = new commPlugins(__METHOD__,this,$args)
         $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
             $this->factory->new($className,[$funcVar,$selfVar,new Node\Expr\Variable("args")])));
@@ -140,11 +140,11 @@ class GenRequiredBIFile
         $funcVar = new Node\Arg(new Node\Scalar\MagicConst\Method());
         $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
 
+        /// remove the reference  makeByRef()
+        $thisMethod = $this->factory->method($thisFuncName)->addParam($this->factory->param('args')->makeVariadic());
 
-        $thisMethod = $this->factory->method($thisFuncName)->addParam($this->factory->param('args')->makeByRef()->makeVariadic());
-
-        $varName = $namespace.'_'.$className.'_'.$thisFuncName.'_var';
-        $retName = $namespace.'_'.$className.'_'.$thisFuncName.'_ret';
+        $varName = $className.'_'.$thisFuncName.'_var';
+        $retName = $className.'_'.$thisFuncName.'_ret';
 
         // $var = new commPlugins(__METHOD__,this,$args)
         $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),

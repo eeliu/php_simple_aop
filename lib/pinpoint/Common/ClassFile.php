@@ -32,6 +32,12 @@ abstract class ClassFile
 
     public $className; /// Foo\A Foo\B
 
+    public $traitName; /// trait Foo {}
+
+    public $fileName;  /// output file Name
+
+    public $name;      /// output name
+
     public $classMethod;
 
     public $funcName; // only for __FUNCTION__
@@ -64,6 +70,12 @@ abstract class ClassFile
         $this->className = trim($this->namespace.'\\'.$node->name->toString());
     }
 
+    public function handleEnterTraitNode(&$node)
+    {
+        assert($node instanceof Node\Stmt\Trait_);
+        // $this->traitName = Foo  trait Foo{}
+        $this->traitName = trim($this->namespace.'\\'.$node->name->toString());
+    }
 
     public function handleClassEnterMethodNode(&$node)
     {
@@ -73,7 +85,7 @@ abstract class ClassFile
         $this->hasRet = false;
     }
 
-    abstract function handleClassLeaveMethodNode(&$node,&$info);
+    abstract function handleLeaveMethodNode(&$node,&$info);
 
     public function markHasReturn(&$node)
     {

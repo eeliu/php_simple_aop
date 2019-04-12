@@ -14,7 +14,6 @@ use pinpoint\Common\PluginParser;
 class PinpointDriver
 {
     protected static $instance;
-    protected $Cfg;
     protected $clAr;
     protected $classMap;
 
@@ -29,16 +28,14 @@ class PinpointDriver
     public static function getInstance(){
 
         if (!self::$instance) {
-            $Cfg  = require PINPOINT_AOP_CONF;
-            self::$instance = new static($Cfg);
+            self::$instance = new static();
         }
 
         return self::$instance;
     }
 
-    public function __construct($Cfg)
+    public function __construct()
     {
-        $this->Cfg = $Cfg;
         $this->clAr = [];
     }
 
@@ -54,7 +51,7 @@ class PinpointDriver
 
         /// scan user plugins which suffix is Plugin.php
         $this->classMap =  new ClassMap();
-        $pluFiles = glob($this->Cfg['plugin_path']."/*Plugin.php");
+        $pluFiles = glob(PLUGINS_DIR."/*Plugin.php");
         $pluParsers = [];
         foreach ($pluFiles as $file)
         {
@@ -70,14 +67,14 @@ class PinpointDriver
                 continue;
             }
 
-            $osr = new OrgClassParse($fullPath,$cl,$info,$this->Cfg);
+            $osr = new OrgClassParse($fullPath,$cl,$info);
             foreach ($osr->classIndex as $clName=>$path)
             {
                 $this->classMap->insertMapping($clName,$path);
             }
         }
 
-        $this->classMap->persistenceClassMapping($this->Cfg['class_index_file']);
+        $this->classMap->persistenceClassMapping(AOP_CACHE_DIR.'/__class_index_table');
 
         AopClassLoader::init($this->classMap->classMap);
 
