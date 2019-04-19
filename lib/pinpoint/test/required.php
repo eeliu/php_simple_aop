@@ -8,27 +8,27 @@ use pinpiont\curlPlugins;
 use pinpiont\curlSetoptPlugins;
 class PDO extends \PDO
 {
-    function query(&...$args)
+    function query(...$args)
     {
-        $pinpiont_commPlugins_query_var = new commPlugins(__METHOD__, $this, $args);
+        $commPlugins_query_var = new commPlugins(__METHOD__, $this, $args);
         try {
-            $pinpiont_commPlugins_query_var->onBefore();
-            $pinpiont_commPlugins_query_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
-            $pinpiont_commPlugins_query_var->onEnd($pinpiont_commPlugins_query_ret);
-            return $pinpiont_commPlugins_query_ret;
+            $commPlugins_query_var->onBefore();
+            $commPlugins_query_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
+            $commPlugins_query_var->onEnd($commPlugins_query_ret);
+            return $commPlugins_query_ret;
         } catch (\Exception $e) {
-            $pinpiont_commPlugins_query_var->onException($e);
+            $commPlugins_query_var->onException($e);
             throw $e;
         }
     }
-    function exec(&...$args)
+    function exec(...$args)
     {
-        $pinpiont_testPlugins_exec_var = new testPlugins(__METHOD__, $this, $args);
+        $testPlugins_exec_var = new testPlugins(__METHOD__, $this, $args);
         try {
-            $pinpiont_testPlugins_exec_var->onBefore();
-            $pinpiont_testPlugins_exec_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
-            $pinpiont_testPlugins_exec_var->onEnd($pinpiont_testPlugins_exec_ret);
-            return $pinpiont_testPlugins_exec_ret;
+            $testPlugins_exec_var->onBefore();
+            $testPlugins_exec_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
+            $testPlugins_exec_var->onEnd($testPlugins_exec_ret);
+            return $testPlugins_exec_ret;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -36,14 +36,14 @@ class PDO extends \PDO
 }
 class Exception extends \Exception
 {
-    function __toString(&...$args)
+    function __toString(...$args)
     {
-        $pinpiont_testPlugins___toString_var = new testPlugins(__METHOD__, $this, $args);
+        $testPlugins___toString_var = new testPlugins(__METHOD__, $this, $args);
         try {
-            $pinpiont_testPlugins___toString_var->onBefore();
-            $pinpiont_testPlugins___toString_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
-            $pinpiont_testPlugins___toString_var->onEnd($pinpiont_testPlugins___toString_ret);
-            return $pinpiont_testPlugins___toString_ret;
+            $testPlugins___toString_var->onBefore();
+            $testPlugins___toString_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
+            $testPlugins___toString_var->onEnd($testPlugins___toString_ret);
+            return $testPlugins___toString_ret;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -51,40 +51,40 @@ class Exception extends \Exception
 }
 function array_push(...$args)
 {
-    $pinpiont_commPlugins_array_push_var = new commPlugins('array_push', null, $args);
+    $commPlugins_array_push_var = new commPlugins('array_push', null, $args);
     try {
-        $pinpiont_commPlugins_array_push_var->onBefore();
-        $pinpiont_commPlugins_array_push_ret = call_user_func_array('array_push', $args);
-        $pinpiont_commPlugins_array_push_var->onEnd($pinpiont_commPlugins_array_push_ret);
-        return $pinpiont_commPlugins_array_push_ret;
+        $commPlugins_array_push_var->onBefore();
+        $commPlugins_array_push_ret = call_user_func_array('array_push', $args);
+        $commPlugins_array_push_var->onEnd($commPlugins_array_push_ret);
+        return $commPlugins_array_push_ret;
     } catch (\Exception $e) {
-        $pinpiont_commPlugins_array_push_var->onException($e);
+        $commPlugins_array_push_var->onException($e);
         throw $e;
     }
 }
 function curl_init(...$args)
 {
-    $pinpiont_curlPlugins_curl_init_var = new curlPlugins('curl_init', null, $args);
+    $curlPlugins_curl_init_var = new curlPlugins('curl_init', null, $args);
     try {
-        $pinpiont_curlPlugins_curl_init_var->onBefore();
-        $pinpiont_curlPlugins_curl_init_ret = call_user_func_array('curl_init', $args);
-        $pinpiont_curlPlugins_curl_init_var->onEnd($pinpiont_curlPlugins_curl_init_ret);
-        return $pinpiont_curlPlugins_curl_init_ret;
+        $curlPlugins_curl_init_var->onBefore();
+        $curlPlugins_curl_init_ret = call_user_func_array('curl_init', $args);
+        $curlPlugins_curl_init_var->onEnd($curlPlugins_curl_init_ret);
+        return $curlPlugins_curl_init_ret;
     } catch (\Exception $e) {
-        $pinpiont_curlPlugins_curl_init_var->onException($e);
+        $curlPlugins_curl_init_var->onException($e);
         throw $e;
     }
 }
 function curl_setopt(...$args)
 {
-    $pinpiont_curlSetoptPlugins_curl_setopt_var = new curlSetoptPlugins('curl_setopt', null, $args);
+    $curlSetoptPlugins_curl_setopt_var = new curlSetoptPlugins('curl_setopt', null, $args);
     try {
-        $pinpiont_curlSetoptPlugins_curl_setopt_var->onBefore();
-        $pinpiont_curlSetoptPlugins_curl_setopt_ret = call_user_func_array('curl_setopt', $args);
-        $pinpiont_curlSetoptPlugins_curl_setopt_var->onEnd($pinpiont_curlSetoptPlugins_curl_setopt_ret);
-        return $pinpiont_curlSetoptPlugins_curl_setopt_ret;
+        $curlSetoptPlugins_curl_setopt_var->onBefore();
+        $curlSetoptPlugins_curl_setopt_ret = call_user_func_array('curl_setopt', $args);
+        $curlSetoptPlugins_curl_setopt_var->onEnd($curlSetoptPlugins_curl_setopt_ret);
+        return $curlSetoptPlugins_curl_setopt_ret;
     } catch (\Exception $e) {
-        $pinpiont_curlSetoptPlugins_curl_setopt_var->onException($e);
+        $curlSetoptPlugins_curl_setopt_var->onException($e);
         throw $e;
     }
 }

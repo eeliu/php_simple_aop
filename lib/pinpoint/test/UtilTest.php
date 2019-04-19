@@ -10,7 +10,7 @@ require_once 'bootstrap.php';
 
 use PHPUnit\Framework\TestCase;
 use pinpoint\Common\Util;
-use Plugins\CommonPlugin;
+use pinpoint\Common\ClassFile;
 //use app\Foo;
 
 class UtilTest extends TestCase
@@ -19,7 +19,7 @@ class UtilTest extends TestCase
     public function testFindFile()
     {
         self::assertEquals(Util::findFile(UtilTest::class),__FILE__);
-        self::assertStringEndsWith('php', Util::findFile(CommonPlugin::class));
+        self::assertStringEndsWith('php', Util::findFile(ClassFile::class));
         self::assertFalse(Util::findFile("xx\Foo"));
     }
 

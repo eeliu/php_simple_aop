@@ -56,10 +56,10 @@ class CodeVisitor extends NodeVisitorAbstract
                 }
             }
 
-            $reqFileName = str_replace('\\','/', $this->curClass).'_required.php';
-            $reqFile->loadToFile($reqFileName);
-            $this->ospIns->requiredFile = $reqFileName;
-            $this->ospIns->originClass->addRequiredFile($reqFileName);
+            $reqRelativityFile = str_replace('\\','/', $this->curClass).'_required.php';
+            $reqFile->loadToFile(AOP_CACHE_DIR.$reqRelativityFile);
+            $this->ospIns->requiredFile = AOP_CACHE_DIR.$reqRelativityFile;
+            $this->ospIns->originClass->addRequiredFile($reqRelativityFile);
         }
         elseif ($node instanceof Node\Stmt\Class_){
 

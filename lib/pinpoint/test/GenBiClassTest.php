@@ -32,4 +32,3 @@ class GenRequiredBIFileTest extends TestCase
         unlink("required_test.php");
     }
 }
-
