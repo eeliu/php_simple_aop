@@ -2,6 +2,7 @@
 
 namespace pinpoint\test;
 
+use pinpoint\test\traitTestPlugin;
 trait TestTrait
 {
     use Proxied_TestTrait {

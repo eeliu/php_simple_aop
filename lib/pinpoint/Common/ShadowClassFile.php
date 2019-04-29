@@ -24,6 +24,8 @@ class ShadowClassFile extends ClassFile
 
     private $useArray = [];
 
+    private $trailUseAsArray=[];
+
     private $handleMethodNodeLeaveFunc = '';
     private $handleEndTraversFunc='';
 
@@ -256,8 +258,14 @@ class ShadowClassFile extends ClassFile
         // foo_1
         $thisFuncName = $node->name->toString();
 
+        $np = $namespace . '\\' . $className;
+        // use CommonPlugins\Plugins;
+        if(!in_array($np,$this->useArray)){
+            $this->useArray[] = $np;
+        }
+
         // $this->extendTraitName::$thisFuncName as $this->extendTraitName_$thisFuncName;
-        $this->useArray[] = $thisFuncName;
+        $this->trailUseAsArray[] = $thisFuncName;
         $extendMethodName = $this->extendTraitName.'_'.$thisFuncName;
 
 
@@ -419,10 +427,16 @@ class ShadowClassFile extends ClassFile
 
     public function handleAfterTraversTrait(&$nodes,&$mFuncAr)
     {
+        $useNodes = [];
+        foreach ($this->useArray as $useAlias){
+            echo $useAlias;
+            $useNodes[] = $this->factory->use($useAlias);
+        }
+
         // use Proxied_Foo{}
         $useTraitNode =$this->factory->useTrait($this->extendTraitName);
 
-        foreach ($this->useArray as $alias)
+        foreach ($this->trailUseAsArray as $alias)
         {
             // $extendMethodName::thisfuncName as $this->extendTraitName.'_'.$thisFuncName;
             $useTraitNode->with($this->factory->traitUseAdaptation($this->extendTraitName,$alias)->as($this->extendTraitName.'_'.$alias));
@@ -431,6 +445,7 @@ class ShadowClassFile extends ClassFile
         $this->traitNode->addStmt($useTraitNode);
 
         $this->fileNode = $this->factory->namespace($this->namespace)
+            ->addStmts($useNodes)
             ->addStmt($this->traitNode);
 
         $this->fileName = $this->traitName;
