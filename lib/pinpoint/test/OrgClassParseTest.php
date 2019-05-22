@@ -61,7 +61,8 @@ class OrgClassParseTest extends TestCase
             'fooNoReturnButReturn'=>[4,'pinpoint\\test\\burden\\depress\\herb\\e\\e\f\\longNp','victim'],
             'fooNaughtyFinal'=>[7,'','over'],
             '\PDO::query'=>[7,'pinpoint\\test','traitTestPlugin'],
-            '\curl_exec' =>[7,'pinpoint\\test','traitTestPlugin']
+            '\curl_exec' =>[7,'pinpoint\\test','traitTestPlugin'],
+            'fooTestACPrivate' =>[4,'pinpoint\\test','traitTestPlugin'],
         ];
 
 

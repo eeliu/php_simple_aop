@@ -72,4 +72,16 @@ class TestClass extends Proxied_TestClass
             throw $e;
         }
     }
+    protected function fooTestACPrivate()
+    {
+        $traitTestPlugin_fooTestACPrivate_var = new traitTestPlugin(__METHOD__, $this);
+        $traitTestPlugin_fooTestACPrivate_ret = null;
+        try {
+            $traitTestPlugin_fooTestACPrivate_ret = parent::fooTestACPrivate();
+            return $traitTestPlugin_fooTestACPrivate_ret;
+        } catch (\Exception $e) {
+            $traitTestPlugin_fooTestACPrivate_var->onException($e);
+            throw $e;
+        }
+    }
 }

@@ -50,4 +50,10 @@ class Proxied_TestClass
         $mysql->query('SELECT name, color, calories FROM fruit ORDER BY name');
 
     }
+
+    protected function fooTestACPrivate()
+    {
+        echo "I'm a private function";
+        return "OK";
+    }
 }require AOP_CACHE_DIR . 'pinpoint/test/TestClass_required.php';

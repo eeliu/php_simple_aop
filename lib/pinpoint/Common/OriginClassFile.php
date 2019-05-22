@@ -69,7 +69,11 @@ class OriginClassFile extends ClassFile
         assert($node instanceof Node\Stmt\ClassMethod);
         if($node->flags &  Node\Stmt\Class_::MODIFIER_PRIVATE)
         {
+            // unset private
             $node->flags = $node->flags &(~Node\Stmt\Class_::MODIFIER_PRIVATE);
+
+            // set protect
+            $node->flags = $node->flags | (Node\Stmt\Class_::MODIFIER_PROTECTED);
         }
 
         if($node->flags & Node\Stmt\Class_::MODIFIER_FINAL)

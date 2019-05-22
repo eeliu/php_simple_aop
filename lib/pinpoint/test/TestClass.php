@@ -50,4 +50,10 @@ class TestClass
         $mysql->query('SELECT name, color, calories FROM fruit ORDER BY name');
 
     }
+
+    private function fooTestACPrivate()
+    {
+        echo "I'm a private function";
+        return "OK";
+    }
 }

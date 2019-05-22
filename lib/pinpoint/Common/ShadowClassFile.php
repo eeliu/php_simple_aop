@@ -122,7 +122,7 @@ class ShadowClassFile extends ClassFile
         }
 
         if ($node->flags & Node\Stmt\Class_::MODIFIER_PRIVATE) {
-            $thisMethod->makePrivate();
+            $thisMethod->makeProtected();
         }
 
         if ($node->flags & Node\Stmt\Class_::MODIFIER_ABSTRACT) {
