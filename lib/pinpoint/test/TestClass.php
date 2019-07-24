@@ -8,6 +8,7 @@ class TestClass
 {
     public function foo($a,$b,$v,$d) :array
     {
+        echo date("y-m-d");
         return [$a,$b,$v,$d];
     }
 

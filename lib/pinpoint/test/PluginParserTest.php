@@ -16,7 +16,11 @@ use pinpoint\Common\PluginParser;
 use pinpoint\Plugins\CommonPlugin;
 use pinpoint\Common\Util;
 
-
+/**
+ * Test findFile
+ * Class PluginParserTest
+ * @package pinpoint\test
+ */
 class PluginParserTest extends TestCase
 {
     public function testRun()

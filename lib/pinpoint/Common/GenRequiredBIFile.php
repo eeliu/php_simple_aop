@@ -43,7 +43,18 @@ class GenRequiredBIFile
         $argsNode = [];
         foreach ($refFunc->getParameters() as $param)
         {
-            $argsNode[] = $this->factory->param($param->getName());
+            $paramNode = $this->factory->param($param->getName());
+
+            if($param->isOptional())
+                continue;
+
+            if($param->isVariadic())
+                $paramNode->makeVariadic();
+
+            if($param->isPassedByReference())
+                $paramNode->makeByRef();
+
+            $argsNode[] = $paramNode;
         }
         return $argsNode;
     }
@@ -54,8 +65,20 @@ class GenRequiredBIFile
         $argsNode = [];
         foreach ($refFunc->getParameters() as $param)
         {
-            $argsNode[] = $this->factory->param($param->getName());
+            $pNode = $this->factory->param($param->getName());
+
+            if($param->isOptional())
+                continue;
+
+            if($param->isVariadic())
+                $pNode->makeVariadic();
+
+            if($param->isPassedByReference())
+                $pNode->makeByRef();
+
+            $argsNode[] = $pNode;
         }
+
         return $argsNode;
     }
 

@@ -52,7 +52,7 @@ class Exception extends \Exception
         }
     }
 }
-function array_push($stack, $vars)
+function array_push(&$stack, ...$vars)
 {
     $args = \func_get_args();
     $commPlugins_array_push_var = new commPlugins('array_push', null, $args);
@@ -66,7 +66,7 @@ function array_push($stack, $vars)
         throw $e;
     }
 }
-function curl_init($url)
+function curl_init()
 {
     $args = \func_get_args();
     $curlPlugins_curl_init_var = new curlPlugins('curl_init', null, $args);
@@ -91,6 +91,20 @@ function curl_setopt($ch, $option, $value)
         return $curlSetoptPlugins_curl_setopt_ret;
     } catch (\Exception $e) {
         $curlSetoptPlugins_curl_setopt_var->onException($e);
+        throw $e;
+    }
+}
+function date($format)
+{
+    $args = \func_get_args();
+    $curlSetoptPlugins_date_var = new curlSetoptPlugins('date', null, $args);
+    try {
+        $curlSetoptPlugins_date_var->onBefore();
+        $curlSetoptPlugins_date_ret = call_user_func_array('date', $args);
+        $curlSetoptPlugins_date_var->onEnd($curlSetoptPlugins_date_ret);
+        return $curlSetoptPlugins_date_ret;
+    } catch (\Exception $e) {
+        $curlSetoptPlugins_date_var->onException($e);
         throw $e;
     }
 }
