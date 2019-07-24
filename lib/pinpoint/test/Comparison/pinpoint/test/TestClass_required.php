@@ -5,8 +5,9 @@ namespace pinpoint\test;
 use pinpoint\test\traitTestPlugin;
 class PDO extends \PDO
 {
-    function query(...$args)
+    function query()
     {
+        $args = \func_get_args();
         $traitTestPlugin_query_var = new traitTestPlugin(__METHOD__, $this, $args);
         try {
             $traitTestPlugin_query_var->onBefore();
@@ -19,8 +20,9 @@ class PDO extends \PDO
         }
     }
 }
-function curl_exec(...$args)
+function curl_exec($ch)
 {
+    $args = \func_get_args();
     $traitTestPlugin_curl_exec_var = new traitTestPlugin('curl_exec', null, $args);
     try {
         $traitTestPlugin_curl_exec_var->onBefore();

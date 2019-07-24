@@ -1,7 +1,11 @@
 <?php
+/**
+ * Focus on Built-in
+ */
 namespace pinpoint\Common;
 
 use PhpParser\BuilderFactory;
+use PhpParser\NodeAbstractTest;
 use PhpParser\PrettyPrinter;
 use PhpParser\Node;
 
@@ -33,10 +37,31 @@ class GenRequiredBIFile
         $this->funcNodes      = [];
     }
 
+    private function creatFuncParamArgs($funcName)
+    {
+        $refFunc = new \ReflectionFunction($funcName);
+        $argsNode = [];
+        foreach ($refFunc->getParameters() as $param)
+        {
+            $argsNode[] = $this->factory->param($param->getName());
+        }
+        return $argsNode;
+    }
+
+    private function creatMethodParamArgs($className,$funcName)
+    {
+        $refFunc = new \ReflectionMethod($className,$funcName);
+        $argsNode = [];
+        foreach ($refFunc->getParameters() as $param)
+        {
+            $argsNode[] = $this->factory->param($param->getName());
+        }
+        return $argsNode;
+    }
 
     public function extendsFunc($funcName,$info)
     {
-        $refFunc = new \ReflectionFunction($funcName);
+
         list($mode, $namespace, $className) = $info;
         $np = $namespace . '\\' . $className;
 
@@ -48,11 +73,27 @@ class GenRequiredBIFile
 
         $selfVar = new Node\Arg(new Node\Expr\ConstFetch(new Node\Name('null')));
 
-        $thisFunc =  $this->factory->function($funcName)->addParam(
-            $this->factory->param('args')->makeVariadic());
+        // funcName($statement1,$statement2)
+
+        $thisFunc =  $this->factory->function($funcName)->addParams( $this->creatFuncParamArgs($funcName));
+
+        //$args = \func_get_args();
+        $getArgsStm = new Node\Stmt\Expression(
+            new Node\Expr\Assign(
+                new Node\Expr\Variable("args"),
+                new Node\Expr\FuncCall(
+                    new Node\Name\FullyQualified('func_get_args'),
+                    [
+
+                    ]
+                )
+            )
+        );
+        $thisFunc->addStmt($getArgsStm);
+
+        // $var = new commPlugins(__METHOD__,this,$args)
         $varName = $className.'_'.$funcName.'_var';
         $retName = $className.'_'.$funcName.'_ret';
-        // $var = new commPlugins(__METHOD__,this,$args)
         $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
             $this->factory->new($className,[$funcVar,$selfVar,new Node\Expr\Variable("args")])));
         $thisFunc->addStmt($newPluginsStm);
@@ -123,11 +164,11 @@ class GenRequiredBIFile
     /// $mode,$np,$className
     public function extendsMethod($dstClass,$thisFuncName,$info)
     {
-        $parameters = new \ReflectionMethod($dstClass,$thisFuncName);
-
-        if($parameters->isStatic()){
-            throw new \Exception("not supported");
-        }
+//        $parameters = new \ReflectionMethod($dstClass,$thisFuncName);
+//
+//        if($parameters->isStatic()){
+//            throw new \Exception("not supported");
+//        }
 
         list($mode, $namespace, $className) = $info;
 
@@ -140,11 +181,27 @@ class GenRequiredBIFile
         $funcVar = new Node\Arg(new Node\Scalar\MagicConst\Method());
         $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
 
-        /// remove the reference  makeByRef()
-        $thisMethod = $this->factory->method($thisFuncName)->addParam($this->factory->param('args')->makeVariadic());
+        /// funcName($a,$b,$c)
+        $thisMethod = $this->factory->method($thisFuncName)->addParams(
+            $this->creatMethodParamArgs($dstClass,$thisFuncName));
 
         $varName = $className.'_'.$thisFuncName.'_var';
         $retName = $className.'_'.$thisFuncName.'_ret';
+
+        //$args = \func_get_args();
+        $getArgsStm = new Node\Stmt\Expression(
+            new Node\Expr\Assign(
+                new Node\Expr\Variable("args"),
+                new Node\Expr\FuncCall(
+                    new Node\Name\FullyQualified('func_get_args'),
+                    [
+
+                    ]
+                )
+            )
+        );
+        $thisMethod->addStmt($getArgsStm);
+
 
         // $var = new commPlugins(__METHOD__,this,$args)
         $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
