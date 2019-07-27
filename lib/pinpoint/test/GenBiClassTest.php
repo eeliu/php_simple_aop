@@ -12,6 +12,11 @@ require_once 'bootstrap.php';
 use pinpoint\Common\GenRequiredBIFile;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class GenRequiredBIFileTest
+ * Test built-in class /Function
+ * @package pinpoint\test
+ */
 class GenRequiredBIFileTest extends TestCase
 {
 
@@ -25,6 +30,7 @@ class GenRequiredBIFileTest extends TestCase
         $bi->extendsFunc("array_push",[7,'pinpiont','commPlugins']);
         $bi->extendsFunc("curl_init",[7,'pinpiont','curlPlugins']);
         $bi->extendsFunc("curl_setopt",[7,'pinpiont','curlSetoptPlugins']);
+        $bi->extendsFunc("date",[7,'pinpiont','curlSetoptPlugins']);
 
         $bi->loadToFile("required_test.php");
         self::assertFileExists("required_test.php");

@@ -8,6 +8,11 @@ use PHPUnit\Framework\TestCase;
 define('AOP_CACHE_DIR',__DIR__.'/Cache/');
 define('PLUGINS_DIR',__DIR__.'/Plugins/');
 
+/**
+ * Class OrgClassParseTest
+ * Test  convert user  class to dst AOP class
+ * @package pinpoint\test
+ */
 class OrgClassParseTest extends TestCase
 {
     public static function cleanDir($dirName)

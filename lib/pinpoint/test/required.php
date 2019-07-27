@@ -8,8 +8,9 @@ use pinpiont\curlPlugins;
 use pinpiont\curlSetoptPlugins;
 class PDO extends \PDO
 {
-    function query(...$args)
+    function query()
     {
+        $args = \func_get_args();
         $commPlugins_query_var = new commPlugins(__METHOD__, $this, $args);
         try {
             $commPlugins_query_var->onBefore();
@@ -21,8 +22,9 @@ class PDO extends \PDO
             throw $e;
         }
     }
-    function exec(...$args)
+    function exec($query)
     {
+        $args = \func_get_args();
         $testPlugins_exec_var = new testPlugins(__METHOD__, $this, $args);
         try {
             $testPlugins_exec_var->onBefore();
@@ -36,8 +38,9 @@ class PDO extends \PDO
 }
 class Exception extends \Exception
 {
-    function __toString(...$args)
+    function __toString()
     {
+        $args = \func_get_args();
         $testPlugins___toString_var = new testPlugins(__METHOD__, $this, $args);
         try {
             $testPlugins___toString_var->onBefore();
@@ -49,8 +52,9 @@ class Exception extends \Exception
         }
     }
 }
-function array_push(...$args)
+function array_push(&$stack, ...$vars)
 {
+    $args = \func_get_args();
     $commPlugins_array_push_var = new commPlugins('array_push', null, $args);
     try {
         $commPlugins_array_push_var->onBefore();
@@ -62,8 +66,9 @@ function array_push(...$args)
         throw $e;
     }
 }
-function curl_init(...$args)
+function curl_init()
 {
+    $args = \func_get_args();
     $curlPlugins_curl_init_var = new curlPlugins('curl_init', null, $args);
     try {
         $curlPlugins_curl_init_var->onBefore();
@@ -75,8 +80,9 @@ function curl_init(...$args)
         throw $e;
     }
 }
-function curl_setopt(...$args)
+function curl_setopt($ch, $option, $value)
 {
+    $args = \func_get_args();
     $curlSetoptPlugins_curl_setopt_var = new curlSetoptPlugins('curl_setopt', null, $args);
     try {
         $curlSetoptPlugins_curl_setopt_var->onBefore();
@@ -85,6 +91,20 @@ function curl_setopt(...$args)
         return $curlSetoptPlugins_curl_setopt_ret;
     } catch (\Exception $e) {
         $curlSetoptPlugins_curl_setopt_var->onException($e);
+        throw $e;
+    }
+}
+function date($format)
+{
+    $args = \func_get_args();
+    $curlSetoptPlugins_date_var = new curlSetoptPlugins('date', null, $args);
+    try {
+        $curlSetoptPlugins_date_var->onBefore();
+        $curlSetoptPlugins_date_ret = call_user_func_array('date', $args);
+        $curlSetoptPlugins_date_var->onEnd($curlSetoptPlugins_date_ret);
+        return $curlSetoptPlugins_date_ret;
+    } catch (\Exception $e) {
+        $curlSetoptPlugins_date_var->onException($e);
         throw $e;
     }
 }
