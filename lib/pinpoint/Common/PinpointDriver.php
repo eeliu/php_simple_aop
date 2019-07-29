@@ -58,12 +58,12 @@ class PinpointDriver
     public function init()
     {
         /// checking the cached file exist, if exist load it
-//        if(file_exists(AOP_CACHE_DIR.'/__class_index_table' ))
-//        {
-//            $this->classMap =  new ClassMap(AOP_CACHE_DIR.'/__class_index_table');
-//            AopClassLoader::init($this->classMap->classMap);
-//            return ;
-//        }
+        if(file_exists(AOP_CACHE_DIR.'/__class_index_table' ))
+        {
+            $this->classMap =  new ClassMap(AOP_CACHE_DIR.'/__class_index_table');
+            AopClassLoader::init($this->classMap->classMap);
+            return ;
+        }
 
         /// scan user plugins which suffix is Plugin.php
         $this->classMap =  new ClassMap();
