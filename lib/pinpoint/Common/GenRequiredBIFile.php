@@ -61,9 +61,6 @@ class GenRequiredBIFile
         {
             $pNode = $this->makeParam($param);
 
-            if($param->isVariadic())
-                $pNode->makeVariadic();
-
             if($param->isPassedByReference())
                 $pNode->makeByRef();
 
@@ -74,10 +71,15 @@ class GenRequiredBIFile
 
     private function makeArrayParam($param)
     {
-        $node =  Node\Param(new Node\Identifier('array'));
-        $default = null;
-        if($param->isOptional())
+        $node = $this->factory->param($param->getName())->setType('array');
+
+        if ($param->isVariadic())
+            $node->makeVariadic();
+        elseif ($param->isOptional())
             $node->setDefault(new Node\Expr\ConstFetch(new Node\Name('null')));
+
+        if($param->isPassedByReference())
+            $node->makeByRef();
 
         return $node;
     }
@@ -85,9 +87,14 @@ class GenRequiredBIFile
     private function makeOtherParam($param)
     {
         $node =  $this->factory->param($param->getName());
-        $default = null;
-        if($param->isOptional())
+
+        if ($param->isVariadic())
+            $node->makeVariadic();
+        elseif($param->isOptional())
             $node->setDefault(new Node\Expr\ConstFetch(new Node\Name('null')));
+
+        if($param->isPassedByReference())
+            $node->makeByRef();
 
         return $node;
     }
@@ -95,7 +102,6 @@ class GenRequiredBIFile
     private function makeParam($param)
     {
         if($param->isArray()){
-            echo $param->getName();
             return $this->makeArrayParam($param);
         }else{
             return $this->makeOtherParam($param);
@@ -108,15 +114,7 @@ class GenRequiredBIFile
         $argsNode = [];
         foreach ($refFunc->getParameters() as $param)
         {
-            $param->isArray();
-
             $pNode =  $this->makeParam($param);
-
-            if($param->isVariadic())
-                $pNode->makeVariadic();
-
-            if($param->isPassedByReference())
-                $pNode->makeByRef();
 
             $argsNode[] = $pNode;
         }
