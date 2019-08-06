@@ -59,20 +59,47 @@ class GenRequiredBIFile
         $argsNode = [];
         foreach ($refFunc->getParameters() as $param)
         {
-            $paramNode = $this->factory->param($param->getName());
-
-            if($param->isOptional())
-                continue;
+            $pNode = $this->makeParam($param);
 
             if($param->isVariadic())
-                $paramNode->makeVariadic();
+                $pNode->makeVariadic();
 
             if($param->isPassedByReference())
-                $paramNode->makeByRef();
+                $pNode->makeByRef();
 
-            $argsNode[] = $paramNode;
+            $argsNode[] = $pNode;
         }
         return $argsNode;
+    }
+
+    private function makeArrayParam($param)
+    {
+        $node =  Node\Param(new Node\Identifier('array'));
+        $default = null;
+        if($param->isOptional())
+            $node->setDefault(new Node\Expr\ConstFetch(new Node\Name('null')));
+
+        return $node;
+    }
+
+    private function makeOtherParam($param)
+    {
+        $node =  $this->factory->param($param->getName());
+        $default = null;
+        if($param->isOptional())
+            $node->setDefault(new Node\Expr\ConstFetch(new Node\Name('null')));
+
+        return $node;
+    }
+
+    private function makeParam($param)
+    {
+        if($param->isArray()){
+            echo $param->getName();
+            return $this->makeArrayParam($param);
+        }else{
+            return $this->makeOtherParam($param);
+        }
     }
 
     private function creatMethodParamArgs($className,$funcName)
@@ -81,10 +108,9 @@ class GenRequiredBIFile
         $argsNode = [];
         foreach ($refFunc->getParameters() as $param)
         {
-            $pNode = $this->factory->param($param->getName());
+            $param->isArray();
 
-            if($param->isOptional())
-                continue;
+            $pNode =  $this->makeParam($param);
 
             if($param->isVariadic())
                 $pNode->makeVariadic();
@@ -203,11 +229,6 @@ class GenRequiredBIFile
     /// $mode,$np,$className
     public function extendsMethod($dstClass,$thisFuncName,$info)
     {
-//        $parameters = new \ReflectionMethod($dstClass,$thisFuncName);
-//
-//        if($parameters->isStatic()){
-//            throw new \Exception("not supported");
-//        }
 
         list($mode, $namespace, $className) = $info;
 
