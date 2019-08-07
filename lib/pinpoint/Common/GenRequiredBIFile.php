@@ -80,6 +80,7 @@ class GenRequiredBIFile
 
         if($param->isPassedByReference())
             $node->makeByRef();
+//        if($param->)
 
         return $node;
     }
@@ -108,11 +109,11 @@ class GenRequiredBIFile
         }
     }
 
-    private function creatMethodParamArgs($className,$funcName)
+    private function creatMethodParamArgs(\ReflectionMethod $reflectFun,$className,$funcName)
     {
-        $refFunc = new \ReflectionMethod($className,$funcName);
+
         $argsNode = [];
-        foreach ($refFunc->getParameters() as $param)
+        foreach ($reflectFun->getParameters() as $param)
         {
             $pNode =  $this->makeParam($param);
 
@@ -236,12 +237,34 @@ class GenRequiredBIFile
             $this->useArray[] = $np;
         }
 
+        $refMethod = new \ReflectionMethod($dstClass,$thisFuncName);
+
         $funcVar = new Node\Arg(new Node\Scalar\MagicConst\Method());
-        $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
 
         /// funcName($a,$b,$c)
         $thisMethod = $this->factory->method($thisFuncName)->addParams(
-            $this->creatMethodParamArgs($dstClass,$thisFuncName));
+            $this->creatMethodParamArgs($refMethod,$dstClass,$thisFuncName));
+
+        if($refMethod->isStatic()){
+            $thisMethod->makeStatic();
+            $selfVar = new Node\Arg(new Node\Expr\ConstFetch(new Node\Name('null')));
+        }else{
+            $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
+        }
+
+        if($refMethod->isFinal()){
+            throw new \Exception("$dstClass::$thisFuncName is a Final, aop not working");
+        }
+
+        if($refMethod->isPrivate()){
+            throw new \Exception("$dstClass::$thisFuncName is a private, aop not working");
+        }
+
+        if($refMethod->isProtected()){
+            $thisMethod->makeProtected();
+        }else {
+            $thisMethod->makePublic();
+        }
 
         $varName = $className.'_'.$thisFuncName.'_var';
         $retName = $className.'_'.$thisFuncName.'_ret';
