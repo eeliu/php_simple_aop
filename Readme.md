@@ -6,7 +6,7 @@
 
 ```Json
     "require": {
-        "eeliu/php_simple_aop": "dev-dev-built-in-not-support"
+        "eeliu/php_simple_aop": "master"
     },
     "repositories": [
         {
