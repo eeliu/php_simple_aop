@@ -44,8 +44,9 @@ class GenRequiredBIFileTest extends TestCase
             }
 
         }
-
-        unlink( "required_test.php");
+        if(file_exists("required_test.php")){
+            unlink( "required_test.php");
+        }
         $bi->loadToFile("required_test.php");
         self::assertFileExists("required_test.php");
         require "required_test.php";
