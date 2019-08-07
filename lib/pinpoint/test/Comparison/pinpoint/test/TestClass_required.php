@@ -5,7 +5,7 @@ namespace pinpoint\test;
 use pinpoint\test\traitTestPlugin;
 class PDO extends \PDO
 {
-    function query()
+    public function query()
     {
         $args = \func_get_args();
         $traitTestPlugin_query_var = new traitTestPlugin(__METHOD__, $this, $args);
