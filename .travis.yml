@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+
+env:
+- ROOT=$PWD
+
+install:
+- travis_retry composer install --no-interaction --no-suggest
+
+script:
+- composer test -- --coverage-clover=coverage.xml
+
+cache:
+  directories:
+  - $HOME/.composer/cache
