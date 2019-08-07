@@ -1,18 +1,10 @@
 language: php
 
 php:
-  - 7.1
-  - 7.2
-
-env:
-- ROOT=$PWD
+  - nightly
 
 install:
 - travis_retry composer install --no-interaction --no-suggest
 
 script:
-- composer test -- --coverage-clover=coverage.xml
-
-cache:
-  directories:
-  - $HOME/.composer/cache
+- php vendor/phpunit/phpunit/phpunit --no-configuration lib/pinpoint/test --teamcity
