@@ -1,10 +1,12 @@
 language: php
 
 php:
-  - nightly
+  - 7.1
+  - 7.2
+  - 7.3
 
 install:
 - travis_retry composer install --no-interaction --no-suggest
 
 script:
-- php vendor/phpunit/phpunit/phpunit --no-configuration lib/pinpoint/test --teamcity
+- vendor/bin/phpunit --configuration PHPUnit.xml --testsuit pinpoint --testdox

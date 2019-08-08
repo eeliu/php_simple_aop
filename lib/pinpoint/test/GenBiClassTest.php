@@ -24,7 +24,7 @@ class GenRequiredBIFileTest extends TestCase
     {
         $bi = new GenRequiredBIFile("app\Foo");
 
-        $classNameAr=["Redis","PDO","PDOStatement","Exception","mysqli_result"];
+        $classNameAr=["Exception"];
         foreach ($classNameAr as $className) {
             $pdo = new  \ReflectionClass($className);
 

@@ -245,6 +245,7 @@ class GenRequiredBIFile
         $thisMethod = $this->factory->method($thisFuncName)->addParams(
             $this->creatMethodParamArgs($refMethod,$dstClass,$thisFuncName));
 
+
         if($refMethod->isStatic()){
             $thisMethod->makeStatic();
             $selfVar = new Node\Arg(new Node\Expr\ConstFetch(new Node\Name('null')));
