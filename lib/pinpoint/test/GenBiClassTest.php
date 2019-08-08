@@ -23,31 +23,33 @@ class GenRequiredBIFileTest extends TestCase
     public function testLoadToFile()
     {
         $bi = new GenRequiredBIFile("app\Foo");
-        $bi->extendsMethod("PDO","query",[7,'pinpoint','commPlugins']);
-        $bi->extendsMethod("PDO","prepare",[7,'pinpoint','commPlugins']);
-        $bi->extendsMethod("PDO","rollBack",[7,'pinpoint','commPlugins']);
-        $bi->extendsMethod("PDO","lastInsertId",[7,'pinpoint','commPlugins']);
-        $bi->extendsMethod("PDO","exec",[7,'pinpoint','testPlugins']);
-        $bi->extendsMethod("PDOStatement","fetchAll",[7,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Exception","__toString",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Redis","connect",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Redis","hGet",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Redis","ttl",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Redis","hDel",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Redis","del",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("Redis","hGetAll",[3,'pinpoint','testPlugins']);
-        $bi->extendsMethod("mysqli_result","fetch_all",[3,'pinpoint','testPlugins']);
 
-        $bi->extendsFunc("array_push",[7,'pinpoint','commPlugins']);
-        $bi->extendsFunc("array_merge",[7,'pinpoint','commPlugins']);
-        $bi->extendsFunc("curl_init",[7,'pinpoint','curlPlugins']);
-        $bi->extendsFunc("curl_setopt",[7,'pinpoint','curlSetoptPlugins']);
-        $bi->extendsFunc("date",[7,'pinpoint','curlSetoptPlugins']);
+        $classNameAr=["Exception"];
+        foreach ($classNameAr as $className) {
+            $pdo = new  \ReflectionClass($className);
 
+            foreach ($pdo->getMethods() as $method) {
+                if(!$method->isFinal())
+                    $bi->extendsMethod($className, $method->getName(), [7, 'pinpoint', 'commPlugins']);
+            }
+        }
+
+        $moduleName =['curl'];
+
+        foreach ($moduleName as $mName) {
+            $funs = get_extension_funcs($mName);
+
+            foreach ($funs as $func) {
+                $bi->extendsFunc($func, [7, 'pinpoint', 'commPlugins']);
+            }
+
+        }
+        if(file_exists("required_test.php")){
+            unlink( "required_test.php");
+        }
         $bi->loadToFile("required_test.php");
         self::assertFileExists("required_test.php");
-        self::assertFileEquals("required.php","required_test.php");
-        unlink("required_test.php");
+        require "required_test.php";
     }
 }
 

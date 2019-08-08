@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.com/eeliu/php_simple_aop.svg?branch=master)](https://travis-ci.com/eeliu/php_simple_aop)
 
 ##  How to Use 
 
