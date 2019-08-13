@@ -59,6 +59,8 @@ https://github.com/eeliu/pinpoint-c-agent/tree/new_aop_php_agent/pinpoint_php_ex
 
 ``` php
 <?php
+// disable origin vendor/autoload.php
+//require_once __DIR__."/../vendor/autoload.php";
 // your vendor autoload.php path
 define('AUTOLOAD_FILE_ALIAS',__DIR__."/../vendor/autoload.php"); 
 // A writable path for caching AOP code
