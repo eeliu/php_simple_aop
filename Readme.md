@@ -73,6 +73,14 @@ require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
 ```
 
+### How to reload all plugins
+
+Remove/delete __class_index_table file within AOP_CACHE_DIR, then all plugins could be reloaded.
+
+```shell
+$ rm /home/apps/web/Cache/__class_index_table
+```
+
 ## Copyright
 
 ```
