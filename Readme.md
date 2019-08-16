@@ -52,7 +52,7 @@ class CommonPlugin
 
 > Example
 
-https://github.com/eeliu/pinpoint-c-agent/tree/new_aop_php_agent/pinpoint_php_example/Plugins
+https://github.com/naver/pinpoint-c-agent/tree/master/PHP/pinpoint_php_example
 
 
 ### Activate plugins 
