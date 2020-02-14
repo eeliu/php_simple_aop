@@ -74,7 +74,6 @@ class PinpointDriver
             $pluParsers[] = new PluginParser($file,$this->clAr);
         }
 
-
         foreach ($this->clAr as $cl=> $info)
         {
             $fullPath = Util::findFile($cl);
@@ -82,7 +81,7 @@ class PinpointDriver
             {
                 continue;
             }
-
+//            echo "$cl -> $fullPath \n";
             $osr = new OrgClassParse($fullPath,$cl,$info);
             foreach ($osr->classIndex as $clName=>$path)
             {
@@ -90,7 +89,7 @@ class PinpointDriver
             }
         }
 
-        $this->classMap->persistenceClassMapping(AOP_CACHE_DIR.'/__class_index_table');
+//        $this->classMap->persistenceClassMapping(AOP_CACHE_DIR.'/__class_index_table');
 
         AopClassLoader::init($this->classMap->classMap);
 

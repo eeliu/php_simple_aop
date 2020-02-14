@@ -79,13 +79,12 @@ class CodeVisitor extends NodeVisitorAbstract
         }
         elseif ($node instanceof Node\Stmt\Class_){
 
-            if( $this->curNamespace.'\\'.$node->name->toString() != $this->curClass)
-            {
-                // ignore uncared
-                echo "NodeTraverser::DONT_TRAVERSE_CHILDREN @".$this->curClass;
-                return NodeTraverser::DONT_TRAVERSE_CHILDREN;
-            }
-
+//            echo "enter class node =======$this->curNamespace =================$this->curClass================";
+//            if( $this->curNamespace.'\\'.$node->name->toString() != $this->curClass)
+//            {
+//                // ignore uncared
+//                return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+//            }
             $this->ospIns->shadowClass->handleEnterClassNode($node);
             $this->ospIns->originClass->handleEnterClassNode($node);
         }

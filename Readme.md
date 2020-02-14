@@ -52,7 +52,7 @@ class CommonPlugin
 
 > Example
 
-https://github.com/naver/pinpoint-c-agent/tree/master/PHP/pinpoint_php_example
+https://github.com/eeliu/pinpoint-c-agent/tree/new_aop_php_agent/pinpoint_php_example/Plugins
 
 
 ### Activate plugins 
@@ -71,14 +71,6 @@ define('PLUGINS_DIR',__DIR__.'/../Plugins/');
 require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
 
-```
-
-### How to reload all plugins
-
-Remove/delete __class_index_table file within AOP_CACHE_DIR, then all plugins could be reloaded.
-
-```shell
-$ rm /home/apps/web/Cache/__class_index_table
 ```
 
 ## Copyright
