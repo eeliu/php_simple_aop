@@ -62,39 +62,6 @@ class AopClassLoader
      */
     public static  function init($classIndex)
     {
-//        $classLoaderNotFoundCb = false;
-//        if(function_exists('pinpoint_user_class_loader_hook')){
-//            $classLoaderNotFoundCb =true;
-//        }
-//
-//        $loaders = spl_autoload_functions();
-//        foreach ($loaders as &$loader) {
-//            $loaderToUnregister = $loader;
-//            if (is_array($loader) && ($loader[0] instanceof ClassLoader)) {
-//                $originalLoader = $loader[0];
-//                $loader[0] = new AopClassLoader($loader[0],$classIndex);
-//                self::$inInitalized = true;
-//
-//            }else{
-//                if($classLoaderNotFoundCb){
-//                    $originalLoader = $loader;
-//                    $newloaser= call_user_func('pinpoint_user_class_loader_hook',$loader[0]);
-//                    if( $newloaser){
-//                        $loader[0] = $newloaser;
-//                    }
-//                }
-//                self::$inInitalized = true;
-//            }
-//            spl_autoload_unregister($loaderToUnregister);
-//        }
-//        unset($loader);
-//
-//        foreach ($loaders as $loader) {
-//            spl_autoload_register($loader);
-//        }
-//
-//        return self::$inInitalized;
-
         $loaders = spl_autoload_functions();
         foreach ($loaders as &$loader) {
             $loaderToUnregister = $loader;
@@ -106,11 +73,6 @@ class AopClassLoader
                 self::$inInitalized = true;
             }
         }
-//        unset($loader);
-//
-//        foreach ($loaders as $loader) {
-//            spl_autoload_register($loader);
-//        }
 
         return self::$inInitalized;
 

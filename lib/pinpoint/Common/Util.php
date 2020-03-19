@@ -40,20 +40,6 @@ class Util
      */
     public static function findFile($class)
     {
-//        if (is_null(Util::$origin_class_loader)) {
-//            $loaders = spl_autoload_functions();
-//            echo count($loaders);
-//            foreach ($loaders as $loader) {
-//                if (is_array($loaders) && $loader[0] instanceof ClassLoader) {
-//                    Util::$origin_class_loader = $loader[0];
-//
-//                }
-//            }
-//        }
-//        $address = Util::$origin_class_loader->findFile($class);
-//        if($address){
-//            return realpath($address);
-//        }
 
         $splLoaders = spl_autoload_functions();
         $address = null;
