@@ -54,7 +54,6 @@ class CommonPlugin
 
 https://github.com/eeliu/pinpoint-c-agent/tree/new_aop_php_agent/pinpoint_php_example/Plugins
 
-
 ### Activate plugins 
 
 ``` php
@@ -72,6 +71,20 @@ require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
 
 ```
+
+
+### How it works
+
+php_simple_aop wrappers your class with an onBefore/onEnd/onException suite. 
+
+![how it works](https://raw.githubusercontent.com/naver/pinpoint-c-agent/master/images/principle_v0.2.x.png)
+
+More detail please goto lib/test/Comparison
+
+> If you found a bug, create an issue to us without any hesitate.
+
+> If it could help you, give us a star as a support!  Thanks!
+
 
 ## Copyright
 
