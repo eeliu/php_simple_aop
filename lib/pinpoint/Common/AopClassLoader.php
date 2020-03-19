@@ -66,19 +66,16 @@ class AopClassLoader
         foreach ($loaders as &$loader) {
             $loaderToUnregister = $loader;
             if (is_array($loader) && ($loader[0] instanceof ClassLoader)) {
+                spl_autoload_unregister($loaderToUnregister);
                 $originalLoader = $loader[0];
                 $loader[0] = new AopClassLoader($loader[0],$classIndex);
+                spl_autoload_register($loader,true,true);
                 self::$inInitalized = true;
             }
-            spl_autoload_unregister($loaderToUnregister);
-        }
-        unset($loader);
-
-        foreach ($loaders as $loader) {
-            spl_autoload_register($loader);
         }
 
         return self::$inInitalized;
+
     }
 
 }

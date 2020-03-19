@@ -29,7 +29,7 @@ use PhpParser\PrettyPrinter;
 use PhpParser\Node;
 class Util
 {
-    private static $origin_class_loader;
+//    private static $origin_class_loader;
     const StartWith = '\/\/\/@hook:';
     const Method= 1;
     const Function= 2;
@@ -40,19 +40,26 @@ class Util
      */
     public static function findFile($class)
     {
-        if (is_null(Util::$origin_class_loader)) {
-            $loaders = spl_autoload_functions();
-            foreach ($loaders as $loader) {
-                if (is_array($loaders) && $loader[0] instanceof ClassLoader) {
-                    Util::$origin_class_loader = $loader[0];
-                    break;
+
+        $splLoaders = spl_autoload_functions();
+        $address = null;
+        foreach ($splLoaders as $loader) {
+
+            if (is_array($loader) && $loader[0] instanceof ClassLoader) {
+                $address = $loader[0]->findFile($class);
+            }
+            elseif (is_array($loader) && is_string($loader[0])){
+                if(method_exists($loader[0],'findFile')){
+                    $address= call_user_func("$loader[0]::findFile",$class);
+
                 }
             }
+
+            if($address){
+                return realpath($address);
+            }
         }
-        $address = Util::$origin_class_loader->findFile($class);
-        if($address){
-            return realpath($address);
-        }
+        
         return false;
     }
 
