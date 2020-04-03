@@ -86,7 +86,6 @@ class CodeVisitor extends NodeVisitorAbstract
             if( $this->curNamespace.'\\'.$node->name->toString() != $this->curClass)
             {
                 // ignore uncared
-                echo "NodeTraverser::DONT_TRAVERSE_CHILDREN @".$this->curClass;
                 return NodeTraverser::DONT_TRAVERSE_CHILDREN;
             }
 

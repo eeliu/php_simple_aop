@@ -445,7 +445,6 @@ class ShadowClassFile extends ClassFile
     {
         $useNodes = [];
         foreach ($this->useArray as $useAlias){
-            echo $useAlias;
             $useNodes[] = $this->factory->use($useAlias);
         }
 
