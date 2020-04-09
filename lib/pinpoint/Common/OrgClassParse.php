@@ -17,8 +17,8 @@
 
 namespace pinpoint\Common;
 
-use pinpoint\Common\OriginClassFile;
-use pinpoint\Common\ShadowClassFile;
+use pinpoint\Common\GenProxiedClassFileHelper;
+use pinpoint\Common\GenOriginClassFileHelper;
 use pinpoint\Common\CodeVisitor;
 
 use PhpParser\Lexer;
@@ -54,8 +54,8 @@ class OrgClassParse
 
     public $mFuncAr;
 
-    public $originClass;
-    public $shadowClass;
+    public $proxiedClassFile;
+    public $originClassFile;
 
     public $orgClassPath;
     public $shadowClassPath;
@@ -93,8 +93,8 @@ class OrgClassParse
 
         $this->printer = new PrettyPrinter\Standard();
 
-        $this->originClass = new OriginClassFile($fullPath,OrgClassParse::PRE_FIX);
-        $this->shadowClass =  new ShadowClassFile(OrgClassParse::PRE_FIX);
+        $this->proxiedClassFile = new GenProxiedClassFileHelper($fullPath,OrgClassParse::PRE_FIX);
+        $this->originClassFile =  new GenOriginClassFileHelper(OrgClassParse::PRE_FIX);
 
         $this->parseOriginFile();
     }

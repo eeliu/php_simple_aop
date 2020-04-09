@@ -6,14 +6,8 @@
 
 ```Json
     "require": {
-        "eeliu/php_simple_aop": "master"
-    },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/eeliu/php_simple_aop.git"
-        }
-    ]
+        "eeliu/php_simple_aop": "dev-master"
+    }
 ```
 
 ### Write your plugins
@@ -58,10 +52,10 @@ https://github.com/naver/pinpoint-c-agent/tree/v0.2.2/PHP/pinpoint_php_example/P
 
 ``` php
 <?php
-// disable origin vendor/autoload.php
-//require_once __DIR__."/../vendor/autoload.php";
-// your vendor autoload.php path
-define('AUTOLOAD_FILE_ALIAS',__DIR__."/../vendor/autoload.php"); 
+
+require_once __DIR__."/../vendor/autoload.php";
+
+
 // A writable path for caching AOP code
 define('AOP_CACHE_DIR',__DIR__.'/Cache/');                       
 // Your plugins directory: All plugins must be have a suffix "Plugin.php",as "CommonPlugin.php mysqlPlugin.php RPCPlugin.php"

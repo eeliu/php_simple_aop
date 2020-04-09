@@ -13,7 +13,7 @@ define('PLUGINS_DIR',__DIR__.'/Plugins/');
  * Test  convert user  class to dst AOP class
  * @package pinpoint\test
  */
-class OrgClassParseTest extends TestCase
+class ClassParseTest extends TestCase
 {
     public static function cleanDir($dirName)
     {
@@ -68,6 +68,9 @@ class OrgClassParseTest extends TestCase
             '\PDO::query'=>[7,'pinpoint\\test','traitTestPlugin'],
             '\curl_exec' =>[7,'pinpoint\\test','traitTestPlugin'],
             'fooTestACPrivate' =>[4,'pinpoint\\test','traitTestPlugin'],
+            'fooTestCompatible'=>[4,'pinpoint\\test','traitTestPlugin'],
+            'returnNothing'=>[7,'pinpoint\\test','traitTestPlugin'],
+            'returnNothing_1'=>[7,'pinpoint\\test','traitTestPlugin']
         ];
 
 

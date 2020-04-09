@@ -27,7 +27,7 @@ use PhpParser\Node;
 use pinpoint\Common\PluginParser;
 use pinpoint\Common\ClassFile;
 
-class OriginClassFile extends ClassFile
+class GenProxiedClassFileHelper extends ClassFile
 {
 
     protected $orgDir;
@@ -173,5 +173,10 @@ class OriginClassFile extends ClassFile
     {
 
         return $nodes;
+    }
+
+    function handlerUseNode(&$nodes)
+    {
+        // do nothing
     }
 }

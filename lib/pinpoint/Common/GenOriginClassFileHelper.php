@@ -29,7 +29,7 @@ use PhpParser\PrettyPrinter;
 use PhpParser\Node;
 use pinpoint\Common\PluginParser;
 
-class ShadowClassFile extends ClassFile
+class GenOriginClassFileHelper extends ClassFile
 {
     private $factory;
 
@@ -38,7 +38,7 @@ class ShadowClassFile extends ClassFile
 
     private $extendTraitName;
 
-    private $useArray = [];
+    private $useBlockAr = [];
 
     private $trailUseAsArray=[];
 
@@ -68,7 +68,7 @@ class ShadowClassFile extends ClassFile
 
         $extendClass = $this->prefix.$node->name->toString();
         $this->classNode  = $this->factory->class(trim($node->name->toString()))->extend($extendClass);
-        $this->useArray[] = $this->namespace.'\\'.$extendClass;
+        $this->useBlockAr[$this->namespace.'\\'.$extendClass] = null;
 
         switch($node->flags) {
             case Node\Stmt\Class_::MODIFIER_FINAL:
@@ -121,8 +121,8 @@ class ShadowClassFile extends ClassFile
 
         $np = $namespace . '\\' . $className;
 
-        if(!in_array($np,$this->useArray)){
-            $this->useArray[] = $np;
+        if(!in_array($np,$this->useBlockAr)){
+            $this->useBlockAr[$np] =null;
         }
 
         // foo_1
@@ -161,7 +161,7 @@ class ShadowClassFile extends ClassFile
             $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
         }
 
-        $pluginArgs  = array_merge([$funcVar,$selfVar],ShadowClassFile::convertParamsName2Arg($node->params));
+        $pluginArgs  = array_merge([$funcVar,$selfVar],GenOriginClassFileHelper::convertParamsName2Arg($node->params));
 
         $thisMethod->addParams($node->params);
         if($node->returnType){
@@ -197,7 +197,7 @@ class ShadowClassFile extends ClassFile
                 new Node\Expr\Variable($retName),
                 new Node\Expr\StaticCall(new Node\Name("parent"),
                     new Node\Identifier($thisFuncName),
-                    ShadowClassFile::convertParamsName2Arg($node->params))));
+                    GenOriginClassFileHelper::convertParamsName2Arg($node->params))));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
@@ -220,7 +220,7 @@ class ShadowClassFile extends ClassFile
             $tryBlock[] = new Node\Stmt\Expression($this->factory->staticCall(
                 new Node\Name("parent")
                 , new Node\Identifier($thisFuncName),
-                ShadowClassFile::convertParamsName2Arg($node->params)));
+                GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
@@ -276,8 +276,8 @@ class ShadowClassFile extends ClassFile
 
         $np = $namespace . '\\' . $className;
         // use CommonPlugins\Plugins;
-        if(!in_array($np,$this->useArray)){
-            $this->useArray[] = $np;
+        if(!in_array($np,$this->useBlockAr)){
+            $this->useBlockAr[$np] = null;
         }
 
         // $this->extendTraitName::$thisFuncName as $this->extendTraitName_$thisFuncName;
@@ -318,7 +318,7 @@ class ShadowClassFile extends ClassFile
             $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
         }
 
-        $pluginArgs  = array_merge([$funcVar,$selfVar],ShadowClassFile::convertParamsName2Arg($node->params));
+        $pluginArgs  = array_merge([$funcVar,$selfVar],GenOriginClassFileHelper::convertParamsName2Arg($node->params));
 
         $thisMethod->addParams($node->params);
         if($node->returnType){
@@ -354,7 +354,7 @@ class ShadowClassFile extends ClassFile
                 new Node\Expr\Variable($retName),
                 new Node\Expr\MethodCall(new Node\Expr\Variable("this"),
                     new Node\Identifier($extendMethodName),
-                    ShadowClassFile::convertParamsName2Arg($node->params))));
+                    GenOriginClassFileHelper::convertParamsName2Arg($node->params))));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
@@ -375,7 +375,7 @@ class ShadowClassFile extends ClassFile
             /// $this->>$thisFuncName();
             $tryBlock[] = new Node\Stmt\Expression( new Node\Expr\MethodCall(new Node\Expr\Variable("this"),
                     new Node\Identifier($extendMethodName),
-                ShadowClassFile::convertParamsName2Arg($node->params)));
+                GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
@@ -420,12 +420,14 @@ class ShadowClassFile extends ClassFile
         call_user_func_array([$this,$this->handleMethodNodeLeaveFunc],[&$node,&$info]);
     }
 
+
+
+
     public function handleAfterTraversClass(&$nodes,&$mFuncAr)
     {
         $useNodes = [];
-        foreach ($this->useArray as $useAlias){
-            $useNodes[] = $this->factory->use($useAlias);
-        }
+
+        $this->useBlockArToNodes($useNodes);
 
         $this->fileNode = $this->factory->namespace($this->namespace);
 
@@ -441,12 +443,25 @@ class ShadowClassFile extends ClassFile
         return $this->fileNode->getNode();
     }
 
+    private function useBlockArToNodes(&$stmNode)
+    {
+
+        foreach ($this->useBlockAr as $useName=>$useAlias){
+
+            if($useAlias){ // the second must be alias : use class as foo
+                $node = $this->factory->use($useName)->as($useAlias);
+            }else {//== 1
+                $node = $this->factory->use($useName);
+            }
+
+            $stmNode[] = $node;
+        }
+    }
+
     public function handleAfterTraversTrait(&$nodes,&$mFuncAr)
     {
         $useNodes = [];
-        foreach ($this->useArray as $useAlias){
-            $useNodes[] = $this->factory->use($useAlias);
-        }
+        $this->useBlockArToNodes($useNodes);
 
         // use Proxied_Foo{}
         $useTraitNode =$this->factory->useTrait($this->extendTraitName);
@@ -476,5 +491,20 @@ class ShadowClassFile extends ClassFile
     function handleLeaveNamespace(&$nodes)
     {
         // do nothing
+    }
+
+    function handlerUseNode(&$nodes)
+    {
+        assert($nodes instanceof Node\Stmt\Use_);
+        foreach ($nodes->uses as $uses)
+        {
+//            $block= array($uses->name->toString());
+//            if(isset($uses->alias)){
+//                $block[]= $uses->alias->name;
+//            }
+
+            $this->useBlockAr[$uses->name->toString()] = $uses->alias ?  $uses->alias->name : null;
+        }
+
     }
 }
