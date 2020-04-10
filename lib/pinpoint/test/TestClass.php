@@ -2,7 +2,9 @@
 
 
 namespace pinpoint\test;
-
+use App\Class1;
+use App\Class2;
+use App\Class3 as FooClass,App\Class4 as FooClass4;
 
 class TestClass
 {
@@ -56,5 +58,18 @@ class TestClass
     {
         echo "I'm a private function";
         return "OK";
+    }
+    public function fooTestCompatible(class1 $a,class2 $b,FooClass $c,FooClass4 $d)
+    {
+        return null;
+    }
+
+    public  function returnNothing(): void
+    {
+        return ;
+    }
+    public  function returnNothing_1()
+    {
+        return ;
     }
 }

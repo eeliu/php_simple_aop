@@ -25,7 +25,7 @@ use PhpParser\NodeAbstractTest;
 use PhpParser\PrettyPrinter;
 use PhpParser\Node;
 
-class GenRequiredBIFile
+class GenRequiredBIFileHelper
 {
     public $namespace;
     public $clName;

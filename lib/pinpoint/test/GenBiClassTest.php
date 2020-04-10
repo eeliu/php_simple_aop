@@ -9,7 +9,7 @@ namespace pinpoint\test;
 
 require_once 'bootstrap.php';
 
-use pinpoint\Common\GenRequiredBIFile;
+use pinpoint\Common\GenRequiredBIFileHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,7 +22,7 @@ class GenRequiredBIFileTest extends TestCase
 
     public function testLoadToFile()
     {
-        $bi = new GenRequiredBIFile("app\Foo");
+        $bi = new GenRequiredBIFileHelper("app\Foo");
 
         $classNameAr=["Exception"];
         foreach ($classNameAr as $className) {

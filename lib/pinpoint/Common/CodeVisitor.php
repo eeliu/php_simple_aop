@@ -26,7 +26,7 @@ namespace pinpoint\Common;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use pinpoint\Common\GenRequiredBIFile;
+use pinpoint\Common\GenRequiredBIFileHelper;
 
 class CodeVisitor extends NodeVisitorAbstract
 {
@@ -50,19 +50,19 @@ class CodeVisitor extends NodeVisitorAbstract
         {
             $this->curNamespace = $node->name->toString();
             /// set namespace
-            $this->ospIns->shadowClass->handleEnterNamespaceNode($node);
-            $this->ospIns->originClass->handleEnterNamespaceNode($node);
+            $this->ospIns->originClassFile->handleEnterNamespaceNode($node);
+            $this->ospIns->proxiedClassFile->handleEnterNamespaceNode($node);
 
-            $reqFile = new GenRequiredBIFile($this->curNamespace);
+            $reqFile = new GenRequiredBIFileHelper($this->curNamespace);
             foreach ($this->ospIns->mFuncAr as $key => $value)
             {
                 $ret = Util::isBuiltIn($key);
 
-                if($ret == Util::Method){
+                if($ret == Util::U_Method){
                     list($clName,$clMethod) = preg_split ("/[::|\\\]/",$key,-1,PREG_SPLIT_NO_EMPTY);
                     $this->builtInAr[] = $clName;
                     $reqFile->extendsMethod($clName,$clMethod,$value);
-                }elseif ($ret == Util::Function){
+                }elseif ($ret == Util::U_Function){
 
                     list($funcName) = preg_split ("/[\\\]/",$key,-1,PREG_SPLIT_NO_EMPTY);
                     $this->builtInAr [] = $funcName ;
@@ -75,12 +75,16 @@ class CodeVisitor extends NodeVisitorAbstract
             $reqRelativityFile = str_replace('\\','/', $this->curClass).'_required.php';
             $reqFile->loadToFile(AOP_CACHE_DIR.$reqRelativityFile);
             $this->ospIns->requiredFile = AOP_CACHE_DIR.$reqRelativityFile;
-            $this->ospIns->originClass->addRequiredFile($reqRelativityFile);
+            $this->ospIns->proxiedClassFile->addRequiredFile($reqRelativityFile);
+        }
+        elseif ($node instanceof Node\Stmt\Use_){
+            $this->ospIns->proxiedClassFile->handlerUseNode($node);
+            $this->ospIns->originClassFile->handlerUseNode($node);
         }
         elseif ($node instanceof Node\Stmt\Class_){
 
-            $this->ospIns->shadowClass->handleEnterClassNode($node);
-            $this->ospIns->originClass->handleEnterClassNode($node);
+            $this->ospIns->originClassFile->handleEnterClassNode($node);
+            $this->ospIns->proxiedClassFile->handleEnterClassNode($node);
         }
         elseif( $node instanceof Node\Stmt\Trait_){
             if( $this->curNamespace.'\\'.$node->name->toString() != $this->curClass)
@@ -89,19 +93,19 @@ class CodeVisitor extends NodeVisitorAbstract
                 return NodeTraverser::DONT_TRAVERSE_CHILDREN;
             }
 
-            $this->ospIns->originClass->handleEnterTraitNode($node);
-            $this->ospIns->shadowClass->handleEnterTraitNode($node);
+            $this->ospIns->proxiedClassFile->handleEnterTraitNode($node);
+            $this->ospIns->originClassFile->handleEnterTraitNode($node);
         }elseif ($node instanceof Node\Stmt\ClassMethod)
         {
-            $this->ospIns->shadowClass->handleClassEnterMethodNode($node);
-            $this->ospIns->originClass->handleClassEnterMethodNode($node);
+            $this->ospIns->originClassFile->handleClassEnterMethodNode($node);
+            $this->ospIns->proxiedClassFile->handleClassEnterMethodNode($node);
         }
         elseif ( $node instanceof Node\Stmt\Return_)
         {
-            $this->ospIns->shadowClass->markHasReturn($node);
+            $this->ospIns->originClassFile->markHasReturn($node);
         }
         elseif ($node instanceof Node\Expr\Yield_){
-            $this->ospIns->shadowClass->markHasReturn($node);
+            $this->ospIns->originClassFile->markHasYield($node);
         }
     }
 
@@ -112,8 +116,8 @@ class CodeVisitor extends NodeVisitorAbstract
             $func = trim( $node->name->toString());
             if(array_key_exists($func,$this->ospIns->mFuncAr))
             {
-                $this->ospIns->shadowClass->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
-                $this->ospIns->originClass->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
+                $this->ospIns->originClassFile->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
+                $this->ospIns->proxiedClassFile->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
                 /// remove the func
                 unset( $this->ospIns->mFuncAr[$func] );
             }
@@ -123,21 +127,21 @@ class CodeVisitor extends NodeVisitorAbstract
             if(! in_array($name,$this->builtInAr) ){
                 return ;
             }
-            return $this->ospIns->originClass->handleFullyQualifiedNode($node);
+            return $this->ospIns->proxiedClassFile->handleFullyQualifiedNode($node);
         }
         elseif ($node instanceof Node\Scalar\MagicConst){
 
-            $this->ospIns->originClass->handleMagicConstNode($node);
+            $this->ospIns->proxiedClassFile->handleMagicConstNode($node);
         }elseif ($node instanceof Node\Stmt\Namespace_){
-            return $this->ospIns->originClass->handleLeaveNamespace($node);
+            return $this->ospIns->proxiedClassFile->handleLeaveNamespace($node);
         }
         elseif ($node instanceof Node\Stmt\Class_){
 
-            $this->ospIns->originClass->handleLeaveClassNode($node);
+            $this->ospIns->proxiedClassFile->handleLeaveClassNode($node);
 
         }elseif ($node instanceof Node\Stmt\Trait_){
 
-            $this->ospIns->originClass->handleLeaveTraitNode($node);
+            $this->ospIns->proxiedClassFile->handleLeaveTraitNode($node);
         }
         elseif ($node instanceof Node\Stmt\UseUse){
             /// scene : use \PDO
@@ -152,15 +156,15 @@ class CodeVisitor extends NodeVisitorAbstract
 
     public function afterTraverse(array $nodes)
     {
-        $node = $this->ospIns->originClass->handleAfterTravers($nodes,
+        $node = $this->ospIns->proxiedClassFile->handleAfterTravers($nodes,
             $this->ospIns->mFuncAr);
 
-        $this->ospIns->orgClassNodeDoneCB($node,$this->ospIns->originClass->name);
+        $this->ospIns->orgClassNodeDoneCB($node,$this->ospIns->proxiedClassFile->name);
 
-        $node = $this->ospIns->shadowClass->handleAfterTravers($nodes,
+        $node = $this->ospIns->originClassFile->handleAfterTravers($nodes,
             $this->ospIns->mFuncAr);
 
-        $this->ospIns->shadowClassNodeDoneCB($node,$this->ospIns->shadowClass->fileName);
+        $this->ospIns->shadowClassNodeDoneCB($node,$this->ospIns->originClassFile->fileName);
 
     }
 

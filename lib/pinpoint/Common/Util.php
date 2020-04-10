@@ -31,8 +31,8 @@ class Util
 {
 //    private static $origin_class_loader;
     const StartWith = '\/\/\/@hook:';
-    const Method= 1;
-    const Function= 2;
+    const U_Method= 1;
+    const U_Function= 2;
 
     /** locate a class (via vendor aop)
      * @param $class
@@ -85,9 +85,9 @@ class Util
         if (strpos($name, "\\") === 0) //build-in
         {
             if (strpos($name, "::") > 0){
-                return static::Method;
+                return static::U_Method;
             }else{
-                return static::Function;
+                return static::U_Function;
             }
         }
 

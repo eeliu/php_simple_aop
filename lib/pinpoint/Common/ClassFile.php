@@ -105,9 +105,19 @@ abstract class ClassFile
 
     public function markHasReturn(&$node)
     {
+        if(isset($node->expr))
+        {
+            $this->hasRet = true;
+        }
+    }
+
+    public function markHasYield(&$node)
+    {
         $this->hasRet = true;
     }
 
+
     abstract function handleAfterTravers(&$nodes,&$mFuncAr);
     abstract function handleLeaveNamespace(&$nodes);
+    abstract function handlerUseNode(&$nodes);
 }

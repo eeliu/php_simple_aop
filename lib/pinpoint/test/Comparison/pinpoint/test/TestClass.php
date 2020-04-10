@@ -2,6 +2,10 @@
 
 namespace pinpoint\test;
 
+use App\Class1;
+use App\Class2;
+use App\Class3 as FooClass;
+use App\Class4 as FooClass4;
 use pinpoint\test\Proxied_TestClass;
 use pinpoint\test\traitTestPlugin;
 use pinpoint\test\burden\depress\herb\e\e\f\longNp\victim;
@@ -81,6 +85,44 @@ class TestClass extends Proxied_TestClass
             return $traitTestPlugin_fooTestACPrivate_ret;
         } catch (\Exception $e) {
             $traitTestPlugin_fooTestACPrivate_var->onException($e);
+            throw $e;
+        }
+    }
+    public function fooTestCompatible(class1 $a, class2 $b, FooClass $c, FooClass4 $d)
+    {
+        $traitTestPlugin_fooTestCompatible_var = new traitTestPlugin(__METHOD__, $this, $a, $b, $c, $d);
+        $traitTestPlugin_fooTestCompatible_ret = null;
+        try {
+            $traitTestPlugin_fooTestCompatible_ret = parent::fooTestCompatible($a, $b, $c, $d);
+            return $traitTestPlugin_fooTestCompatible_ret;
+        } catch (\Exception $e) {
+            $traitTestPlugin_fooTestCompatible_var->onException($e);
+            throw $e;
+        }
+    }
+    public function returnNothing() : void
+    {
+        $traitTestPlugin_returnNothing_var = new traitTestPlugin(__METHOD__, $this);
+        $traitTestPlugin_returnNothing_ret = null;
+        try {
+            $traitTestPlugin_returnNothing_var->onBefore();
+            parent::returnNothing();
+            $traitTestPlugin_returnNothing_var->onEnd($traitTestPlugin_returnNothing_ret);
+        } catch (\Exception $e) {
+            $traitTestPlugin_returnNothing_var->onException($e);
+            throw $e;
+        }
+    }
+    public function returnNothing_1()
+    {
+        $traitTestPlugin_returnNothing_1_var = new traitTestPlugin(__METHOD__, $this);
+        $traitTestPlugin_returnNothing_1_ret = null;
+        try {
+            $traitTestPlugin_returnNothing_1_var->onBefore();
+            parent::returnNothing_1();
+            $traitTestPlugin_returnNothing_1_var->onEnd($traitTestPlugin_returnNothing_1_ret);
+        } catch (\Exception $e) {
+            $traitTestPlugin_returnNothing_1_var->onException($e);
             throw $e;
         }
     }
