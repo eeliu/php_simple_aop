@@ -23,8 +23,8 @@
 
 namespace pinpoint\Common;
 use pinpoint\Common\OrgClassParse;
-use pinpoint\Common\AopClassLoader;
-use pinpoint\Common\ClassMap;
+use pinpoint\Common\PinpointClassLoader;
+use pinpoint\Common\AopClassMap;
 use pinpoint\Common\PluginParser;
 
 class PinpointDriver
@@ -55,18 +55,15 @@ class PinpointDriver
         $this->clAr = [];
     }
 
-    public function init()
+    public function init(AopClassMap $classMap)
     {
         /// checking the cached file exist, if exist load it
-        if(file_exists(AOP_CACHE_DIR.'/__class_index_table' ))
+        if(!$classMap->updateSelf())
         {
-            $this->classMap =  new ClassMap(AOP_CACHE_DIR.'/__class_index_table');
-            AopClassLoader::init($this->classMap->classMap);
+            PinpointClassLoader::init($classMap);
             return ;
         }
 
-        /// scan user plugins which suffix is Plugin.php
-        $this->classMap =  new ClassMap();
         $pluFiles = glob(PLUGINS_DIR."/*Plugin.php");
         $pluParsers = [];
         foreach ($pluFiles as $file)
@@ -84,13 +81,13 @@ class PinpointDriver
             $osr = new OrgClassParse($fullPath,$cl,$info);
             foreach ($osr->classIndex as $clName=>$path)
             {
-                $this->classMap->insertMapping($clName,$path);
+                $classMap->insertMapping($clName,$path);
             }
         }
 
-       $this->classMap->persistenceClassMapping(AOP_CACHE_DIR.'/__class_index_table');
+        $classMap->persistenceClassMapping();
 
-        AopClassLoader::init($this->classMap->classMap);
+        PinpointClassLoader::init($classMap);
 
     }
 
