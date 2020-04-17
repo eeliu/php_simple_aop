@@ -18,29 +18,31 @@
 namespace pinpoint\Common;
 
 use Composer\Autoload\ClassLoader;
-
-class AopClassLoader
+use pinpoint\Common\AopClassMap;
+class PinpointClassLoader
 {
     public  static $inInitalized;
     private $origin; //  origin classloader
     private $classMap;
-    public function __construct($origin, $classMap)
+    public function __construct($origin, AopClassMap $classMap)
     {
         $this->classMap = $classMap;
 
         $this->origin = $origin;
+        assert($origin);
     }
 
-    public function findFile($class)
+    public function findFile(string $classFullName)
     {
-        $file = isset($this->classMap[$class]) ?  $this->classMap[$class]: null;
+        $file = $this->classMap->findFile($classFullName);
 
-        if( is_null($file) ) {
-            $file = $this->origin->findFile($class);
+        if( ! $file )
+        {
+            $file = $this->origin->findFile($classFullName);
             if ($file !== false)
             {
                 $file = realpath($file) ?: $file;
-                $this->classMap[$class] = $file;
+//                $this->classMap[$classFullName] = $file;
             }
         }
         return $file;
@@ -66,9 +68,11 @@ class AopClassLoader
         foreach ($loaders as &$loader) {
             $loaderToUnregister = $loader;
             if (is_array($loader) && ($loader[0] instanceof ClassLoader)) {
+                // unregister composer loader
                 spl_autoload_unregister($loaderToUnregister);
-                $originalLoader = $loader[0];
-                $loader[0] = new AopClassLoader($loader[0],$classIndex);
+                // $originalLoader = $loader[0];
+                // replace composer loader with aopclassLoader
+                $loader[0] = new PinpointClassLoader($loader[0],$classIndex);
                 spl_autoload_register($loader,true,true);
                 self::$inInitalized = true;
             }

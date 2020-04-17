@@ -1,11 +1,20 @@
 <?php
 
 namespace pinpoint;
-//require AUTOLOAD_FILE_ALIAS;
-
+use pinpoint\Common\AopClassMap;
 use pinpoint\Common\PinpointDriver;
 
-PinpointDriver::getInstance()->init();
+$classMap = null;
+if(defined('USER_DEFINED_CLASS_MAP_IMPLEMENT'))
+{
+    $className = USER_DEFINED_CLASS_MAP_IMPLEMENT;
+    $classMap = new $className();
+    assert($classMap instanceof AopClassMap);
+}else{
+    $classMap = new AopClassMap();
+}
+
+PinpointDriver::getInstance()->init($classMap);
 
 if(class_exists("\Plugins\PerRequestPlugins")){
     \Plugins\PerRequestPlugins::instance();
