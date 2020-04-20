@@ -2,7 +2,7 @@
 
 ##  How to Use 
 
-### Import from github
+### Import from packagist
 
 ```Json
     "require": {
@@ -69,7 +69,7 @@ require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
 ### How it works
 
-php_simple_aop wrappers your class with an onBefore/onEnd/onException suite 
+php_simple_aop wrappers your class with an onBefore/onEnd/onException suite
 
 ![how it works](https://raw.githubusercontent.com/naver/pinpoint-c-agent/master/images/principle_v0.2.x.png)
 
