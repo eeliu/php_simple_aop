@@ -54,91 +54,39 @@ class GenRequiredBIFileHelper
         $this->funcNodes      = [];
     }
 
-//    private function createFuncParamArgs($funcName)
-//    {
-//        $refFunc = new \ReflectionFunction($funcName);
-//        $argsNode = [];
-//        foreach ($refFunc->getParameters() as $param)
-//        {
-//            $pNode = $this->makeParam($param);
-//
-//            if($param->isPassedByReference())
-//                $pNode->makeByRef();
-//
-//            $argsNode[] = $pNode;
-//        }
-//        return $argsNode;
-//    }
-//
-//    private function createCallFuncParamArgsIntoArray($funcName)
-//    {
-//        $refFunc = new \ReflectionFunction($funcName);
-//        $argsNode = [];
-//        foreach ($refFunc->getParameters() as $param)
-//        {
-//            $pNode = $this->makeParam($param);
-//
-//            if($param->isPassedByReference())
-//                $pNode->makeByRef();
-//
-//            $argsNode[] = $pNode;
-//        }
-//        return $argsNode;
-//    }
-//
-//    private function makeArrayParam($param)
-//    {
-//        $node = $this->factory->param($param->getName())->setType('array');
-//
-//        if ($param->isVariadic())
-//            $node->makeVariadic();
-//        elseif ($param->isOptional())
-//            $node->setDefault(new Node\Expr\ConstFetch(new Node\Name('null')));
-//
-//        if($param->isPassedByReference())
-//            $node->makeByRef();
-////        if($param->)
-//
-//        return $node;
-//    }
-//
-//    private function makeOtherParam($param)
-//    {
-//        $node =  $this->factory->param($param->getName());
-//
-//        if ($param->isVariadic())
-//            $node->makeVariadic();
-//        elseif($param->isOptional())
-//            $node->setDefault(new Node\Expr\ConstFetch(new Node\Name('null')));
-//
-//        if($param->isPassedByReference())
-//            $node->makeByRef();
-//
-//        return $node;
-//    }
-//
-//    private function makeParam($param)
-//    {
-//        if($param->isArray()){
-//            return $this->makeArrayParam($param);
-//        }else{
-//            return $this->makeOtherParam($param);
-//        }
-//    }
-//
-//    private function creatMethodParamArgs(\ReflectionMethod $reflectFun,$className,$funcName)
-//    {
-//
-//        $argsNode = [];
-//        foreach ($reflectFun->getParameters() as $param)
-//        {
-//            $pNode =  $this->makeParam($param);
-//
-//            $argsNode[] = $pNode;
-//        }
-//
-//        return $argsNode;
-//    }
+    //$args = \pinpoint_get_func_ref_args();
+    private function createGetArgsStm($paraName)
+    {
+        if(function_exists('pinpoint_get_func_ref_args')){
+            $getArgsStm = new Node\Stmt\Expression(
+                new Node\Expr\Assign(
+                    new Node\Expr\Variable($paraName),
+                    new Node\Expr\FuncCall(
+                        new Node\Name\FullyQualified('pinpoint_get_func_ref_args'),
+                        [
+
+                        ]
+                    )
+                )
+            );
+        }
+        else{
+            $getArgsStm = new Node\Stmt\Expression(
+                new Node\Expr\Assign(
+                    new Node\Expr\Variable($paraName),
+                    new Node\Expr\ArrayDimFetch(
+                        new Node\Expr\ArrayDimFetch(
+                            $this->factory->funcCall('debug_backtrace'),
+                            new Node\Scalar\LNumber(0)
+                        ),
+                        new Node\Scalar\String_('args')
+                    )
+                    )
+            );
+        }
+
+        return $getArgsStm;
+    }
 
     public function extendsFunc($funcName,$info)
     {
@@ -156,28 +104,16 @@ class GenRequiredBIFileHelper
 
         // funcName($statement1,$statement2)
         $biHelper = new GenerateBIHelper(new \ReflectionFunction($funcName),$this->factory);
+
         $thisFunc =  $this->factory->function($funcName)->addParams($biHelper->getStmParamsDefine());
 
-//        //$args = \func_get_args();
-//        $getArgsStm = new Node\Stmt\Expression(
-//            new Node\Expr\Assign(
-//                new Node\Expr\Variable("args"),
-//                new Node\Expr\FuncCall(
-//                    new Node\Name\FullyQualified('func_get_args'),
-//                    [
-//
-//                    ]
-//                )
-//            )
-//        );
-//
-//        $thisFunc->addStmt($getArgsStm);
+        $thisFunc->addStmt($this->createGetArgsStm('args'));
 
         // $var = new commPlugins(__METHOD__,this,$args)
         $varName = $className.'_'.$funcName.'_var';
         $retName = $className.'_'.$funcName.'_ret';
         $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
-            $this->factory->new($className,[$funcVar,$selfVar, $biHelper->getArrayParams()])));
+            $this->factory->new($className,[$funcVar,$selfVar, new Node\Expr\Variable('args')])));
         $thisFunc->addStmt($newPluginsStm);
 
         $tryBlock = [];
@@ -197,7 +133,7 @@ class GenRequiredBIFileHelper
                     new Node\Name("call_user_func_array"),
                     [
                         new Node\Arg(new Node\Scalar\String_($funcName)),
-                        $biHelper->getArrayParams(),
+                        new Node\Expr\Variable('args'),
                     ]
                 )
             )
@@ -289,7 +225,7 @@ class GenRequiredBIFileHelper
         $varName = $className.'_'.$thisFuncName.'_var';
         $retName = $className.'_'.$thisFuncName.'_ret';
 
-//        //$args = \func_get_args();
+        //$args = \func_get_args();
 //        $getArgsStm = new Node\Stmt\Expression(
 //            new Node\Expr\Assign(
 //                new Node\Expr\Variable("args"),
@@ -301,12 +237,13 @@ class GenRequiredBIFileHelper
 //                )
 //            )
 //        );
-//        $thisMethod->addStmt($getArgsStm);
+
+        $thisMethod->addStmt($this->createGetArgsStm('args'));
 
 
         // $var = new commPlugins(__METHOD__,this,$args)
         $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
-            $this->factory->new($className,[$funcVar,$selfVar,$biHelper->getArrayParams()])));
+            $this->factory->new($className,[$funcVar,$selfVar,new Node\Expr\Variable('args')])));
         $thisMethod->addStmt($newPluginsStm);
 
 
@@ -332,7 +269,7 @@ class GenRequiredBIFileHelper
                             new Node\Scalar\MagicConst\Function_()
                         ]
                     )),
-                    $biHelper->getArrayParams()
+                    new Node\Expr\Variable('args')
                 ]
                 )
             )
