@@ -7,10 +7,11 @@ class PDO extends \PDO
 {
     public function query()
     {
-        $traitTestPlugin_query_var = new traitTestPlugin(__METHOD__, $this, array());
+        $args = debug_backtrace()[0]['args'];
+        $traitTestPlugin_query_var = new traitTestPlugin(__METHOD__, $this, $args);
         try {
             $traitTestPlugin_query_var->onBefore();
-            $traitTestPlugin_query_ret = call_user_func_array(array('parent', __FUNCTION__), array());
+            $traitTestPlugin_query_ret = call_user_func_array(array('parent', __FUNCTION__), $args);
             $traitTestPlugin_query_var->onEnd($traitTestPlugin_query_ret);
             return $traitTestPlugin_query_ret;
         } catch (\Exception $e) {
@@ -21,10 +22,11 @@ class PDO extends \PDO
 }
 function curl_exec($ch)
 {
-    $traitTestPlugin_curl_exec_var = new traitTestPlugin('curl_exec', null, array($ch));
+    $args = debug_backtrace()[0]['args'];
+    $traitTestPlugin_curl_exec_var = new traitTestPlugin('curl_exec', null, $args);
     try {
         $traitTestPlugin_curl_exec_var->onBefore();
-        $traitTestPlugin_curl_exec_ret = call_user_func_array('curl_exec', array($ch));
+        $traitTestPlugin_curl_exec_ret = call_user_func_array('curl_exec', $args);
         $traitTestPlugin_curl_exec_var->onEnd($traitTestPlugin_curl_exec_ret);
         return $traitTestPlugin_curl_exec_ret;
     } catch (\Exception $e) {
