@@ -1,5 +1,10 @@
 ﻿## Changes
 
+### v0.2.4 Support references in parameters
+1. Support pinpoint_get_func_ref_args
+2. Add debug_backtrac when pinpoint_get_func_ref_args not find
+3. Support PHP 7.4
+
 ### 0.2.3 Support user filter
 
 1. User can filter plugins related class loader by extending `Pinpoint\Common\AopClassMap`.
