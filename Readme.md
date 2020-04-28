@@ -3,6 +3,7 @@
 ##  How to Use 
 
 ### Import from packagist
+Change configuration file in PHP/pinpoint_php_example/composer.json
 
 ```Json
     "require": {
@@ -11,6 +12,7 @@
 ```
 
 ### Write your plugins
+This is a plugin template for reference.
 
 ```php
 /// Placing "///@hook:" here: aop on function(method) on before,end and Exception
@@ -49,6 +51,7 @@ class CommonPlugin
 https://github.com/naver/pinpoint-c-agent/tree/v0.2.2/PHP/pinpoint_php_example/Plugins
 
 ### Activate plugins 
+This could be found in PHP/pinpoint_php_example/app/index.php.
 
 ``` php
 <?php
@@ -57,9 +60,9 @@ require_once __DIR__."/../vendor/autoload.php";
 
 // A writable path for caching AOP code
 define('AOP_CACHE_DIR',__DIR__.'/Cache/');                       
-// Your plugins directory: All plugins must be have a suffix "Plugin.php",as "CommonPlugin.php mysqlPlugin.php RPCPlugin.php"
+// Your plugins directory: All plugins must have a suffix "Plugin.php",as "CommonPlugin.php mysqlPlugin.php RPCPlugin.php"
 define('PLUGINS_DIR',__DIR__.'/../Plugins/');
-// since 0.2.3 support user filter when loader a class.
+// since 0.2.3 supports user filter when loadering a class.
 // define('USER_DEFINED_CLASS_MAP_IMPLEMENT','\Plugins\ClassMapInFile.php');
 // Use php_simple_aop auto_pinpointed.php instead of vendor/autoload.php
 require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
@@ -69,11 +72,11 @@ require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
 ### How it works
 
-php_simple_aop wrappers your class with an onBefore/onEnd/onException suite
+php_simple_aop wrappers your class with an onBefore/onEnd/onException suite.
 
 ![how it works](https://raw.githubusercontent.com/naver/pinpoint-c-agent/master/images/principle_v0.2.x.png)
 
-More detail please goto lib/test/Comparison
+More details please go to lib/pinpoint/test/Comparison/pinpoint/test
 
 > If you found a bug, please create an issue to us without any hesitate.
 
