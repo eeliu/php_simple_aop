@@ -6,7 +6,7 @@
 
 ```Json
     "require": {
-        "eeliu/php_simple_aop": "0.2.3"
+        "eeliu/php_simple_aop": "v0.2.4"
     }
 ```
 
