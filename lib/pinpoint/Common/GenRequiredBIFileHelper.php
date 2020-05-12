@@ -58,7 +58,7 @@ class GenRequiredBIFileHelper
     private function createGetArgsStm($paraName)
     {
         if(function_exists('pinpoint_get_func_ref_args')){
-            $getArgsStm = new Node\Stmt\Expression(
+            $getArgsStm =
                 new Node\Expr\Assign(
                     new Node\Expr\Variable($paraName),
                     new Node\Expr\FuncCall(
@@ -67,22 +67,20 @@ class GenRequiredBIFileHelper
 
                         ]
                     )
-                )
-            );
+                );
         }
         else{
-            $getArgsStm = new Node\Stmt\Expression(
+            $getArgsStm =
                 new Node\Expr\Assign(
                     new Node\Expr\Variable($paraName),
                     new Node\Expr\ArrayDimFetch(
                         new Node\Expr\ArrayDimFetch(
-                            $this->factory->funcCall('debug_backtrace'),
+                            new Node\Expr\FuncCall(new Node\Name('debug_backtrace')),
                             new Node\Scalar\LNumber(0)
                         ),
                         new Node\Scalar\String_('args')
                     )
-                    )
-            );
+                    );
         }
 
         return $getArgsStm;
@@ -112,8 +110,8 @@ class GenRequiredBIFileHelper
         // $var = new commPlugins(__METHOD__,this,$args)
         $varName = $className.'_'.$funcName.'_var';
         $retName = $className.'_'.$funcName.'_ret';
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
-            $this->factory->new($className,[$funcVar,$selfVar, new Node\Expr\Variable('args')])));
+        $newPluginsStm = new Node\Expr\Assign(new Node\Expr\Variable($varName),
+           new Node\Expr\New_(new Node\Name($className),[$funcVar,$selfVar, new Node\Expr\Variable('args')]));
         $thisFunc->addStmt($newPluginsStm);
 
         $tryBlock = [];
@@ -122,12 +120,12 @@ class GenRequiredBIFileHelper
         if ($mode & PluginParser::BEFORE)
         {
             // $var->onBefore();
-            $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
+            $tryBlock[] =
+                new Node\Expr\MethodCall(new Node\Expr\Variable($varName), "onBefore");
         }
 
         // $ret  = call_user_func_array("function",parater)
-        $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
+        $tryBlock[] =new Node\Expr\Assign(
                 new Node\Expr\Variable($retName),
                 new Node\Expr\FuncCall(
                     new Node\Name("call_user_func_array"),
@@ -136,18 +134,16 @@ class GenRequiredBIFileHelper
                         new Node\Expr\Variable('args'),
                     ]
                 )
-            )
         );
 
         /// $var->onEnd($ret);
         if($mode & PluginParser::END)
         {
-            $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(
+            $tryBlock[] =
+                new Node\Expr\MethodCall(
                     new Node\Expr\Variable($varName),
                     "onEnd",
                     [new Node\Expr\Variable($retName)]
-                )
             );
         }
 
@@ -159,16 +155,16 @@ class GenRequiredBIFileHelper
 
         if ($mode & PluginParser::EXCEPTION) {
 
-            $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName),
-                    "onException",$expArgs));
+            $catchBlock[] =
+               new Node\Expr\MethodCall(new Node\Expr\Variable($varName),
+                    "onException",$expArgs);
 
         }
 
         $catchBlock[] = new Node\Stmt\Throw_(new Node\Expr\Variable("e"));
 
-        $catchNode[] = new Node\Stmt\Catch_([new Node\Name('\Exception')],
-            new Node\Expr\Variable('e'),
+        $catchNode[] = new Node\Stmt\Catch_([new Node\Name\FullyQualified('Exception')],
+            'e',
             $catchBlock);
 
         $tryCatchFinallyNode = new Node\Stmt\TryCatch($tryBlock,$catchNode);
@@ -242,8 +238,8 @@ class GenRequiredBIFileHelper
 
 
         // $var = new commPlugins(__METHOD__,this,$args)
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
-            $this->factory->new($className,[$funcVar,$selfVar,new Node\Expr\Variable('args')])));
+        $newPluginsStm = new Node\Expr\Assign(new Node\Expr\Variable($varName),
+            new Node\Expr\New_(new Node\Name($className),[$funcVar,$selfVar,new Node\Expr\Variable('args')]));
         $thisMethod->addStmt($newPluginsStm);
 
 
@@ -253,12 +249,12 @@ class GenRequiredBIFileHelper
         // $var->onBefore();
         if ($mode & PluginParser::BEFORE)
         {
-            $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
+            $tryBlock[] = new Node\Expr\MethodCall(
+                new Node\Expr\Variable($varName), "onBefore");
         }
 
         // $ret  = call_user_func_array
-        $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
+        $tryBlock[] =new Node\Expr\Assign(
             new Node\Expr\Variable($retName),
             new Node\Expr\FuncCall(
                 new Node\Name("call_user_func_array"),
@@ -272,19 +268,17 @@ class GenRequiredBIFileHelper
                     new Node\Expr\Variable('args')
                 ]
                 )
-            )
-        );
+            );
 
         /// $var->onEnd($ret);
         if($mode & PluginParser::END)
         {
-            $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(
+            $tryBlock[] =
+                new Node\Expr\MethodCall(
                     new Node\Expr\Variable($varName),
                     "onEnd",
                     [new Node\Expr\Variable($retName)]
-                )
-            );
+                );
         }
 
         /// return $var;
@@ -295,16 +289,16 @@ class GenRequiredBIFileHelper
 
         if ($mode & PluginParser::EXCEPTION) {
 
-            $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName),
-                    "onException",$expArgs));
+            $catchBlock[] =
+                new Node\Expr\MethodCall(new Node\Expr\Variable($varName),
+                    "onException",$expArgs);
 
         }
 
         $catchBlock[] = new Node\Stmt\Throw_(new Node\Expr\Variable("e"));
 
-        $catchNode[] = new Node\Stmt\Catch_([new Node\Name('\Exception')],
-            new Node\Expr\Variable('e'),
+        $catchNode[] = new Node\Stmt\Catch_([new Node\Name\FullyQualified('Exception')],
+            'e',
             $catchBlock);
 
         $tryCatchFinallyNode = new Node\Stmt\TryCatch($tryBlock,$catchNode);

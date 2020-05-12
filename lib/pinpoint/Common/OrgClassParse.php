@@ -88,7 +88,7 @@ class OrgClassParse
         ]);
 
         $this->traverser = new NodeTraverser();
-        $this->traverser->addVisitor(new NodeVisitor\CloningVisitor());
+//        $this->traverser->addVisitor(new NodeVisitor\CloningVisitor());
         $this->traverser->addVisitor(new CodeVisitor($this));
 
         $this->printer = new PrettyPrinter\Standard();
@@ -114,10 +114,7 @@ class OrgClassParse
     {
         $fullPath = AOP_CACHE_DIR.'/'.str_replace('\\','/',$fullName).'.php';
         // try to keep blank and filenu
-        $orgClassContext = $this->printer->printFormatPreserving(
-            $node,
-            $this->rawOrigStmts,
-            $this->lexer->getTokens());
+        $orgClassContext = $this->printer->prettyPrintFile($node);
 
         Util::flushStr2File($orgClassContext,$fullPath);
         $this->classIndex[$fullName] = $fullPath;

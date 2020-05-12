@@ -83,20 +83,20 @@ abstract class ClassFile
     public function handleEnterClassNode(&$node)
     {
         assert($node instanceof Node\Stmt\Class_);
-        $this->className = trim($this->namespace.'\\'.$node->name->toString());
+        $this->className = trim($this->namespace.'\\'.$node->name);
     }
 
     public function handleEnterTraitNode(&$node)
     {
         assert($node instanceof Node\Stmt\Trait_);
         // $this->traitName = Foo  trait Foo{}
-        $this->traitName = trim($this->namespace.'\\'.$node->name->toString());
+        $this->traitName = trim($this->namespace.'\\'.$node->name);
     }
 
     public function handleClassEnterMethodNode(&$node)
     {
         assert($node instanceof Node\Stmt\ClassMethod);
-        $this->funcName = $node->name->toString();
+        $this->funcName = $node->name;
         $this->classMethod =$this->className.'::'.$this->funcName;
         $this->hasRet = false;
     }

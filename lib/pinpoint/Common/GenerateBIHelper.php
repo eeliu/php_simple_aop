@@ -32,7 +32,7 @@ class GenerateBIHelper
             $pNode = $this->makeParam($param);
 
             if($param->isPassedByReference())
-                $pNode->makeByRef();
+                $pNode->byRef = true;
             $this->_stmArgsNode[] = $pNode;
         }
         return $this->_stmArgsNode;;
@@ -49,31 +49,30 @@ class GenerateBIHelper
 
     private function makeArrayParam($param)
     {
-        $node = $this->_factory->param($param->getName())->setType('array');
-
+//        $node = $this->_factory->param($param->getName())->setType('array');
+        $node = new Node\Param($param->name);
+        $node->type = 'array';
         if ($param->isVariadic())
-            $node->makeVariadic();
+            $node->variadic = true;
         elseif ($param->isOptional())
-//            new Node\Name('null')
-            $node->setDefault(null);
-
+            $node->default = new Node\Expr\ConstFetch(new Node\Name('null'));
         if($param->isPassedByReference())
-            $node->makeByRef();
+            $node->byRef = true;
 
         return $node;
     }
 
     private function makeOtherParam($param)
     {
-        $node =  $this->_factory->param($param->getName());
+        $node = new Node\Param($param->name);
 
         if ($param->isVariadic())
-            $node->makeVariadic();
+            $node->variadic = true;
         elseif($param->isOptional())
-            $node->setDefault(null);
+            $node->default = new Node\Expr\ConstFetch(new Node\Name('null'));
 
         if($param->isPassedByReference())
-            $node->makeByRef();
+            $node->byRef = true;
 
         return $node;
     }

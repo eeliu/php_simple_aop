@@ -50,9 +50,9 @@ class GenProxiedClassFileHelper extends ClassFile
     public function handleLeaveClassNode(&$node)
     {
         assert($node instanceof Node\Stmt\Class_);
-        $className =$this->prefix.$node->name->toString();
+        $className =$this->prefix.$node->name;
 
-        $node->name = new Node\Identifier($className);
+        $node->name = $className;
 
         $this->className = $this->namespace.'\\'.$className;
         $this->name = $this->className;
@@ -71,9 +71,9 @@ class GenProxiedClassFileHelper extends ClassFile
     public function handleLeaveTraitNode(&$node)
     {
         assert($node instanceof Node\Stmt\Trait_);
-        $className =$this->prefix.$node->name->toString();
+        $className =$this->prefix.$node->name;
 
-        $node->name = new Node\Identifier($className);
+        $node->name = $className;
 
         $this->traitName = $this->namespace.'\\'.$className;
         $this->name = $this->traitName;
@@ -155,12 +155,11 @@ class GenProxiedClassFileHelper extends ClassFile
         assert($nodes instanceof Node\Stmt\Namespace_);
         foreach ($this->appendingFile as $fullPath)
         {
-            $expression= new Node\Stmt\Expression(
+            $expression=
                 new Node\Expr\Include_(
                     new Node\Expr\BinaryOp\Concat(new Node\Expr\ConstFetch( new Node\Name("AOP_CACHE_DIR")),new Node\Scalar\String_($fullPath))
-                    ,Node\Expr\Include_::TYPE_REQUIRE
-                ), ['startTokenPos'=>$nodes->getStartTokenPos(),'endTokenPos'=> $nodes->getEndTokenPos()]
-            );
+                    ,Node\Expr\Include_::TYPE_REQUIRE);
+//                , ['startTokenPos'=>$nodes->getStartTokenPos(),'endTokenPos'=> $nodes->getEndTokenPos()]);
             $nodes->stmts[]  = $expression;
             $originNode = $nodes->getAttribute("origNode");
             $originNode->stmts[] = $expression;

@@ -66,8 +66,8 @@ class GenOriginClassFileHelper extends ClassFile
         assert($node instanceof Node\Stmt\Class_);
         parent::handleEnterClassNode($node);
 
-        $extendClass = $this->prefix.$node->name->toString();
-        $this->classNode  = $this->factory->class(trim($node->name->toString()))->extend($extendClass);
+        $extendClass = $this->prefix.$node->name;
+        $this->classNode  = $this->factory->class(trim($node->name))->extend($extendClass);
         $this->useBlockAr[$this->namespace.'\\'.$extendClass] = null;
 
         switch($node->flags) {
@@ -89,8 +89,8 @@ class GenOriginClassFileHelper extends ClassFile
     {
         assert($node instanceof Node\Stmt\Trait_);
         parent::handleEnterTraitNode($node);
-        $this->traitNode  = $this->factory->trait(trim($node->name->toString()));
-        $this->extendTraitName = $this->prefix.$node->name->toString();
+        $this->traitNode  = $this->factory->trait(trim($node->name));
+        $this->extendTraitName = $this->prefix.$node->name;
         $this->handleMethodNodeLeaveFunc = 'handleTraitLeaveMethodNode';
         $this->handleEndTraversFunc   = 'handleAfterTraversTrait';
     }
@@ -104,7 +104,18 @@ class GenOriginClassFileHelper extends ClassFile
         foreach ($params as $param)
         {
             assert($param instanceof Node\Param);
-            $args [] = new Node\Arg($param->var);
+
+            $var = new Node\Expr\Variable($param->name);
+            $arg = new Node\Arg($var);
+
+//            if($param->byRef)
+//                $arg->byRef = true;
+//            if($param->variadic)
+//                $arg-> = true;
+
+
+
+            $args [] = $arg;
         }
 
         return  $args;
@@ -126,7 +137,7 @@ class GenOriginClassFileHelper extends ClassFile
         }
 
         // foo_1
-        $thisFuncName = $node->name->toString();
+        $thisFuncName = $node->name;
 
         $funcVar = new Node\Arg(new Node\Scalar\MagicConst\Method());
 
@@ -172,13 +183,13 @@ class GenOriginClassFileHelper extends ClassFile
         $retName = $className.'_'.$thisFuncName.'_ret';
 
         /// $var = new CommonPlugins(__FUNCTION__,self,$p);
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
-            $this->factory->new($className, $pluginArgs)));
+        $newPluginsStm = new Node\Expr\Assign(new Node\Expr\Variable($varName),
+            new Node\Expr\New_(new Node\Name($className), $pluginArgs));
 
         $thisMethod->addStmt($newPluginsStm);
         // $var = null;
-        $newVar = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($retName),
-            new Node\Expr\ConstFetch(new Node\Name('null'))));
+        $newVar = new Node\Expr\Assign(new Node\Expr\Variable($retName),
+            new Node\Expr\ConstFetch(new Node\Name('null')));
         $thisMethod->addStmt($newVar);
 
         $tryBlock = [];
@@ -187,27 +198,26 @@ class GenOriginClassFileHelper extends ClassFile
         if ($mode & PluginParser::BEFORE)
         {
             // $var->onBefore();
-            $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
+            $tryBlock[] =
+                new Node\Expr\MethodCall(new Node\Expr\Variable($varName), "onBefore");
         }
 
         if ($this->hasRet) {
             /// $ret = paraent::$thisFuncName();
-            $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
+            $tryBlock[] =new Node\Expr\Assign(
                 new Node\Expr\Variable($retName),
                 new Node\Expr\StaticCall(new Node\Name("parent"),
-                    new Node\Identifier($thisFuncName),
-                    GenOriginClassFileHelper::convertParamsName2Arg($node->params))));
+                    "$thisFuncName",
+                    GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
             {
-                $tryBlock[] = new Node\Stmt\Expression(
-                    $this->factory->methodCall(
+                $tryBlock[] =
+                    new Node\Expr\MethodCall(
                         new Node\Expr\Variable($varName),
                         "onEnd",
                         [new Node\Expr\Variable($retName)]
-                    )
                 );
             }
 
@@ -217,20 +227,18 @@ class GenOriginClassFileHelper extends ClassFile
         } else {
             /// paraent::$thisFuncName();
 
-            $tryBlock[] = new Node\Stmt\Expression($this->factory->staticCall(
+            $tryBlock[] = new Node\Expr\StaticCall(
                 new Node\Name("parent")
-                , new Node\Identifier($thisFuncName),
-                GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
+                , $thisFuncName,
+                GenOriginClassFileHelper::convertParamsName2Arg($node->params));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
             {
-                $tryBlock[] = new Node\Stmt\Expression(
-                    $this->factory->methodCall(
+                $tryBlock[] =  new Node\Expr\MethodCall(
                         new Node\Expr\Variable($varName),
                         "onEnd",
                         [new Node\Expr\Variable($retName)]
-                    )
                 );
             }
         }
@@ -240,16 +248,16 @@ class GenOriginClassFileHelper extends ClassFile
 
         if ($mode & PluginParser::EXCEPTION) {
 
-            $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName),
-                    "onException",$expArgs));
+            $catchBlock[] =
+                new Node\Expr\MethodCall(new Node\Expr\Variable($varName),
+                    "onException",$expArgs);
 
         }
 
         $catchBlock[] = new Node\Stmt\Throw_(new Node\Expr\Variable("e"));
 
         $catchNode[] = new Node\Stmt\Catch_([new Node\Name('\Exception')],
-            new Node\Expr\Variable('e'),
+            'e',
             $catchBlock);
 
         $tryCatchFinallyNode = new Node\Stmt\TryCatch($tryBlock,$catchNode);
@@ -272,10 +280,10 @@ class GenOriginClassFileHelper extends ClassFile
         list($mode, $namespace, $className) = $info;
 
         // foo_1
-        $thisFuncName = $node->name->toString();
+        $thisFuncName = $node->name;
 
         $np = $namespace . '\\' . $className;
-        // use CommonPlugins\Plugins;
+        // use traitTestPlugi;
         if(!in_array($np,$this->useBlockAr)){
             $this->useBlockAr[$np] = null;
         }
@@ -329,13 +337,13 @@ class GenOriginClassFileHelper extends ClassFile
         $retName = $className.'_'.$thisFuncName.'_ret';
 
         /// $var = new CommonPlugins(__FUNCTION__,self,$p);
-        $newPluginsStm = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($varName),
-            $this->factory->new($className, $pluginArgs)));
+        $newPluginsStm = new Node\Expr\Assign(new Node\Expr\Variable($varName),
+            new Node\Expr\New_(new Node\Name($className), $pluginArgs));
 
         $thisMethod->addStmt($newPluginsStm);
         // $var = null;
-        $newVar = new Node\Stmt\Expression(new Node\Expr\Assign(new Node\Expr\Variable($retName),
-            new Node\Expr\ConstFetch(new Node\Name('null'))));
+        $newVar = new Node\Expr\Assign(new Node\Expr\Variable($retName),
+            new Node\Expr\ConstFetch(new Node\Name('null')));
         $thisMethod->addStmt($newVar);
 
         $tryBlock = [];
@@ -344,27 +352,26 @@ class GenOriginClassFileHelper extends ClassFile
         if ($mode & PluginParser::BEFORE)
         {
             // $var->onBefore();
-            $tryBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName), "onBefore"));
+            $tryBlock[] =
+                new Node\Expr\MethodCall(new Node\Expr\Variable($varName), "onBefore");
         }
 
         if ($this->hasRet) {
-            /// $ret = $this->Proxied_xxx(&...$args);
-            $tryBlock[] = new Node\Stmt\Expression(new Node\Expr\Assign(
+            $tryBlock[] = new Node\Expr\Assign(
                 new Node\Expr\Variable($retName),
-                new Node\Expr\MethodCall(new Node\Expr\Variable("this"),
-                    new Node\Identifier($extendMethodName),
-                    GenOriginClassFileHelper::convertParamsName2Arg($node->params))));
+                new Node\Expr\MethodCall(
+                    new Node\Expr\Variable("this"),
+                    '$extendMethodName',
+                    GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
             {
-                $tryBlock[] = new Node\Stmt\Expression(
-                    $this->factory->methodCall(
+                $tryBlock[] =
+                    new Node\Expr\MethodCall(
                         new Node\Expr\Variable($varName),
                         "onEnd",
                         [new Node\Expr\Variable($retName)]
-                    )
                 );
             }
 
@@ -372,21 +379,21 @@ class GenOriginClassFileHelper extends ClassFile
             $tryBlock[] = new Node\Stmt\Return_(new Node\Expr\Variable($retName));
 
         } else {
-            /// $this->>$thisFuncName();
-            $tryBlock[] = new Node\Stmt\Expression( new Node\Expr\MethodCall(new Node\Expr\Variable("this"),
-                    new Node\Identifier($extendMethodName),
-                GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
+            /// $this->$thisFuncName();
+            $tryBlock[] =  new Node\Expr\MethodCall(
+                new Node\Expr\Variable("this"),
+                   $extendMethodName,
+                GenOriginClassFileHelper::convertParamsName2Arg($node->params));
 
             /// $var->onEnd($ret);
             if($mode & PluginParser::END)
             {
-                $tryBlock[] = new Node\Stmt\Expression(
-                    $this->factory->methodCall(
+                $tryBlock[] = new
+                    Node\Expr\MethodCall(
                         new Node\Expr\Variable($varName),
                         "onEnd",
                         [new Node\Expr\Variable($retName)]
-                    )
-                );
+                    );
             }
         }
 
@@ -395,16 +402,17 @@ class GenOriginClassFileHelper extends ClassFile
 
         if ($mode & PluginParser::EXCEPTION) {
 
-            $catchBlock[] = new Node\Stmt\Expression(
-                $this->factory->methodCall(new Node\Expr\Variable($varName),
-                    "onException",$expArgs));
+            $catchBlock[] =
+                new
+                Node\Expr\MethodCall(new Node\Expr\Variable($varName),
+                    "onException",$expArgs);
 
         }
 
         $catchBlock[] = new Node\Stmt\Throw_(new Node\Expr\Variable("e"));
 
         $catchNode[] = new Node\Stmt\Catch_([new Node\Name('\Exception')],
-            new Node\Expr\Variable('e'),
+            'e',
             $catchBlock);
 
         $tryCatchFinallyNode = new Node\Stmt\TryCatch($tryBlock,$catchNode);
@@ -464,15 +472,18 @@ class GenOriginClassFileHelper extends ClassFile
         $this->useBlockArToNodes($useNodes);
 
         // use Proxied_Foo{}
-        $useTraitNode =$this->factory->useTrait($this->extendTraitName);
+        $traitUse = new Node\Stmt\TraitUse([new Node\Name($this->extendTraitName)]);
 
         foreach ($this->trailUseAsArray as $alias)
         {
             // $extendMethodName::thisfuncName as $this->extendTraitName.'_'.$thisFuncName;
-            $useTraitNode->with($this->factory->traitUseAdaptation($this->extendTraitName,$alias)->as($this->extendTraitName.'_'.$alias));
+//            $useTraitNode->with($this->factory->traitUseAdaptation($this->extendTraitName,$alias)->as($this->extendTraitName.'_'.$alias));
+
+            $traitUse->adaptations []= new Node\Stmt\TraitUseAdaptation\Alias(new Node\Name($alias),$alias,'',$this->extendTraitName.'_'.$alias);
+
         }
 
-        $this->traitNode->addStmt($useTraitNode);
+        $this->traitNode->stmts[] = $traitUse ;
 
         $this->fileNode = $this->factory->namespace($this->namespace)
             ->addStmts($useNodes)
@@ -503,7 +514,7 @@ class GenOriginClassFileHelper extends ClassFile
 //                $block[]= $uses->alias->name;
 //            }
 
-            $this->useBlockAr[$uses->name->toString()] = $uses->alias ?  $uses->alias->name : null;
+            $this->useBlockAr[$uses->name->toString()] = $uses->alias ?  $uses->alias : null;
         }
 
     }

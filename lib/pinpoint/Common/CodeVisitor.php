@@ -87,7 +87,7 @@ class CodeVisitor extends NodeVisitorAbstract
             $this->ospIns->proxiedClassFile->handleEnterClassNode($node);
         }
         elseif( $node instanceof Node\Stmt\Trait_){
-            if( $this->curNamespace.'\\'.$node->name->toString() != $this->curClass)
+            if( $this->curNamespace.'\\'.$node->name != $this->curClass)
             {
                 // ignore uncared
                 return NodeTraverser::DONT_TRAVERSE_CHILDREN;
@@ -113,7 +113,7 @@ class CodeVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node)
     {
         if ($node instanceof Node\Stmt\ClassMethod){
-            $func = trim( $node->name->toString());
+            $func = trim( $node->name);
             if(array_key_exists($func,$this->ospIns->mFuncAr))
             {
                 $this->ospIns->originClassFile->handleLeaveMethodNode($node,$this->ospIns->mFuncAr[$func]);
@@ -125,7 +125,7 @@ class CodeVisitor extends NodeVisitorAbstract
             // use Foo\Name replace \Name
             $name = $node->toString();
             if(! in_array($name,$this->builtInAr) ){
-                return ;
+                return $node;
             }
             return $this->ospIns->proxiedClassFile->handleFullyQualifiedNode($node);
         }
