@@ -75,7 +75,7 @@ class GenRequiredBIFileHelper
                     new Node\Expr\Variable($paraName),
                     new Node\Expr\ArrayDimFetch(
                         new Node\Expr\ArrayDimFetch(
-                            new Node\Expr\FuncCall(new Node\Name('debug_backtrace')),
+                            new Node\Expr\FuncCall(new Node\Name('debug_backtrace'),$this->genDebugBackTraceArgs()),
                             new Node\Scalar\LNumber(0)
                         ),
                         new Node\Scalar\String_('args')
@@ -84,6 +84,21 @@ class GenRequiredBIFileHelper
         }
 
         return $getArgsStm;
+    }
+    /*
+     * (DBUG_BACKTRACE_PROVIDE_OBJECT,1)
+     */
+    private function genDebugBackTraceArgs()
+    {
+        $args = [];
+
+        $var_1th = new Node\Arg(
+            new Node\Expr\ConstFetch(new Node\Name('DEBUG_BACKTRACE_PROVIDE_OBJECT')));
+        $var_2th =new Node\Arg( new Node\Scalar\LNumber(1));
+        $args []= $var_1th;
+        $args [] = $var_2th;
+        return $args;
+
     }
 
     public function extendsFunc($funcName,$info)
