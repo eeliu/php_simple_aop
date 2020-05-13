@@ -7,7 +7,7 @@ class PDO extends \PDO
 {
     public function query()
     {
-        $args = debug_backtrace()[0]['args'];
+        $args = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['args'];
         $traitTestPlugin_query_var = new traitTestPlugin(__METHOD__, $this, $args);
         try {
             $traitTestPlugin_query_var->onBefore();
@@ -22,7 +22,7 @@ class PDO extends \PDO
 }
 function curl_exec($ch)
 {
-    $args = debug_backtrace()[0]['args'];
+    $args = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['args'];
     $traitTestPlugin_curl_exec_var = new traitTestPlugin('curl_exec', null, $args);
     try {
         $traitTestPlugin_curl_exec_var->onBefore();

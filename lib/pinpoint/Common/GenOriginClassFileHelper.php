@@ -479,11 +479,11 @@ class GenOriginClassFileHelper extends ClassFile
             // $extendMethodName::thisfuncName as $this->extendTraitName.'_'.$thisFuncName;
 //            $useTraitNode->with($this->factory->traitUseAdaptation($this->extendTraitName,$alias)->as($this->extendTraitName.'_'.$alias));
 
-            $traitUse->adaptations []= new Node\Stmt\TraitUseAdaptation\Alias(new Node\Name($alias),$alias,'',$this->extendTraitName.'_'.$alias);
+            $traitUse->adaptations []= new Node\Stmt\TraitUseAdaptation\Alias(new Node\Name($this->extendTraitName),$alias,null,$this->extendTraitName.'_'.$alias);
 
         }
 
-        $this->traitNode->stmts[] = $traitUse ;
+        $this->traitNode->addStmt($traitUse) ;
 
         $this->fileNode = $this->factory->namespace($this->namespace)
             ->addStmts($useNodes)

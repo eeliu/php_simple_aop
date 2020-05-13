@@ -149,9 +149,6 @@ class GenProxiedClassFileHelper extends ClassFile
 
     public function handleLeaveNamespace(&$nodes)
     {
-        //todo
-        // This is just a temporary solution,just some tricks on origNode.
-        // Maybe one day php-parse could handle such scene
         assert($nodes instanceof Node\Stmt\Namespace_);
         foreach ($this->appendingFile as $fullPath)
         {
