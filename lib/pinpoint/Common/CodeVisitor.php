@@ -125,7 +125,7 @@ class CodeVisitor extends NodeVisitorAbstract
             // use Foo\Name replace \Name
             $name = $node->toString();
             if(! in_array($name,$this->builtInAr) ){
-                return ;
+                return $node;
             }
             return $this->ospIns->proxiedClassFile->handleFullyQualifiedNode($node);
         }
