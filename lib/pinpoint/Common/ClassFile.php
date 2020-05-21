@@ -77,7 +77,7 @@ abstract class ClassFile
     public function handleEnterNamespaceNode(&$node)
     {
         assert($node instanceof Node\Stmt\Namespace_);
-        $this->namespace = trim($node->name->toString());
+        $this->namespace = trim($node->name);
     }
 
     public function handleEnterClassNode(&$node)

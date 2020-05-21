@@ -32,7 +32,7 @@ class PinpointClassLoader
         assert($origin);
     }
 
-    public function findFile(string $classFullName)
+    public function findFile($classFullName)
     {
         $file = $this->classMap->findFile($classFullName);
 

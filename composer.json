@@ -16,7 +16,7 @@
     },
     "minimum-stability": "dev",
     "require-dev": {
-        "phpunit/phpunit": "^5"
+        "phpunit/phpunit": "^4"
     },
     "require": {
         "nikic/php-parser": "v3.1.5"

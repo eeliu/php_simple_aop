@@ -361,7 +361,7 @@ class GenOriginClassFileHelper extends ClassFile
                 new Node\Expr\Variable($retName),
                 new Node\Expr\MethodCall(
                     new Node\Expr\Variable("this"),
-                    '$extendMethodName',
+                    $extendMethodName,
                     GenOriginClassFileHelper::convertParamsName2Arg($node->params)));
 
             /// $var->onEnd($ret);
@@ -513,7 +513,7 @@ class GenOriginClassFileHelper extends ClassFile
 //            if(isset($uses->alias)){
 //                $block[]= $uses->alias->name;
 //            }
-
+//            var_dump($uses->name->toString());
             $this->useBlockAr[$uses->name->toString()] = $uses->alias ?  $uses->alias : null;
         }
 

@@ -42,24 +42,27 @@ class PluginVisitor extends NodeVisitorAbstract
     ///$PluginsInfo => class
     private function loadCommentFunc(&$node,$mode)
     {
-       foreach( $node->getComments() as &$doc)
-       {
-            $funArray = Util::parseUserFunc(trim($doc->getText()));
+        $comments = $node->getAttribute('comments');
 
-            foreach ($funArray as $func)
-            {
-                $this->iParser->insertFunc($func,$mode);
+        if($comments) {
+            foreach ($comments as &$doc) {
+
+                $funArray = Util::parseUserFunc(trim($doc->getText()));
+
+                foreach ($funArray as $func) {
+                    $this->iParser->insertFunc($func, $mode);
+                }
             }
-       }
+        }
     }
 
     public function enterNode(Node $node)
     {
         if ($node instanceof Node\Stmt\Namespace_) {
-            $this->iParser->setNamespace(trim($node->name->toString()));
+            $this->iParser->setNamespace(trim($node->name));
         }
         elseif($node instanceof Node\Stmt\Class_) {
-            $this->iParser->setClassName(trim($node->name->toString()));
+            $this->iParser->setClassName(trim($node->name));
             $this->loadCommentFunc($node, PluginParser::ALL);
         }
     }
@@ -68,8 +71,7 @@ class PluginVisitor extends NodeVisitorAbstract
     {
         if($node instanceof Node\Stmt\ClassMethod)
         {
-            $name = $node->name->toString();
-            $node->getComments();
+            $name = $node->name;
             switch($name)
             {
                 case "onBefore":

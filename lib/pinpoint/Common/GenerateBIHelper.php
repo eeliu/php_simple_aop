@@ -52,9 +52,9 @@ class GenerateBIHelper
 //        $node = $this->_factory->param($param->getName())->setType('array');
         $node = new Node\Param($param->name);
         $node->type = 'array';
-        if ($param->isVariadic())
-            $node->variadic = true;
-        elseif ($param->isOptional())
+//        if ($param->isVariadic())
+//            $node->variadic = true;
+        if ($param->isOptional())
             $node->default = new Node\Expr\ConstFetch(new Node\Name('null'));
         if($param->isPassedByReference())
             $node->byRef = true;
@@ -66,9 +66,10 @@ class GenerateBIHelper
     {
         $node = new Node\Param($param->name);
 
-        if ($param->isVariadic())
-            $node->variadic = true;
-        elseif($param->isOptional())
+//        if ($param->isVariadic())
+//            $node->variadic = true;
+
+        if($param->isOptional())
             $node->default = new Node\Expr\ConstFetch(new Node\Name('null'));
 
         if($param->isPassedByReference())

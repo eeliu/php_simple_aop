@@ -48,7 +48,7 @@ class CodeVisitor extends NodeVisitorAbstract
     {
         if($node instanceof Node\Stmt\Namespace_)
         {
-            $this->curNamespace = $node->name->toString();
+            $this->curNamespace = $node->name;
             /// set namespace
             $this->ospIns->originClassFile->handleEnterNamespaceNode($node);
             $this->ospIns->proxiedClassFile->handleEnterNamespaceNode($node);
@@ -146,9 +146,9 @@ class CodeVisitor extends NodeVisitorAbstract
         elseif ($node instanceof Node\Stmt\UseUse){
             /// scene : use \PDO
             ///        replace \PDO to \Np\PDO
-            if( in_array($node->name->toString(),$this->builtInAr))
+            if( in_array($node->name,$this->builtInAr))
             {
-                $node->name   = new Node\Name($this->curNamespace.'\\'.$node->name->toString());
+                $node->name   = new Node\Name($this->curNamespace.'\\'.$node->name);
             }
             return $node;
         }

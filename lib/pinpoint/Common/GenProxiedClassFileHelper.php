@@ -104,7 +104,7 @@ class GenProxiedClassFileHelper extends ClassFile
     {
         assert($node instanceof Node\Name\FullyQualified);
 
-        $newNode = new Node\Name($node->toString());
+        $newNode = new Node\Name($node);
 
         return $newNode;
     }
