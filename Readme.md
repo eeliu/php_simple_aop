@@ -7,7 +7,7 @@ Change configuration file in PHP/pinpoint_php_example/composer.json
 
 ```Json
     "require": {
-        "eeliu/php_simple_aop": "v0.2.4"
+        "eeliu/php_simple_aop": "v0.3.0"
     }
 ```
 

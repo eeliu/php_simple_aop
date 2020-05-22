@@ -1,5 +1,8 @@
 ﻿## Changes
 
+### v0.3.0 Support php 5.5/5.6
+
+
 ### v0.2.4 Support references in parameters
 1. Support pinpoint_get_func_ref_args
 2. Add debug_backtrac when pinpoint_get_func_ref_args not find
