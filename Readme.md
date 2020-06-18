@@ -7,7 +7,7 @@ Change configuration file in PHP/pinpoint_php_example/composer.json
 
 ```Json
     "require": {
-        "eeliu/php_simple_aop": "v0.3.0"
+        "eeliu/php_simple_aop": "v0.3.1"
     }
 ```
 
@@ -64,6 +64,10 @@ define('AOP_CACHE_DIR',__DIR__.'/Cache/');
 define('PLUGINS_DIR',__DIR__.'/../Plugins/');
 // since 0.2.3 supports user filter when loadering a class.
 // define('USER_DEFINED_CLASS_MAP_IMPLEMENT','\Plugins\ClassMapInFile.php');
+
+// if define PINPOINT_ENV, the cache/ could refresh every time. 
+// Recommanded disable this line in real evn
+define('PINPOINT_ENV','dev');
 // Use php_simple_aop auto_pinpointed.php instead of vendor/autoload.php
 require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
