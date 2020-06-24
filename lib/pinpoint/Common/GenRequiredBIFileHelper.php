@@ -202,7 +202,13 @@ class GenRequiredBIFileHelper
             $this->useArray[] = $np;
         }
 
-        $refMethod = new \ReflectionMethod($dstClass,$thisFuncName);
+        try{
+            $refMethod = new \ReflectionMethod($dstClass,$thisFuncName);
+        }catch (\ReflectionException $e)
+        {
+            return;
+        }
+
         $biHelper = new GenerateBIHelper($refMethod,$this->factory);
 
         $funcVar = new Node\Arg(new Node\Scalar\MagicConst\Method());
