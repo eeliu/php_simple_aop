@@ -42,7 +42,6 @@ class PinpointClassLoader
             if ($file !== false)
             {
                 $file = realpath($file) ?: $file;
-//                $this->classMap[$classFullName] = $file;
             }
         }
         return $file;

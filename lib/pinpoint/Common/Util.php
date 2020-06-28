@@ -30,7 +30,8 @@ use PhpParser\Node;
 class Util
 {
 //    private static $origin_class_loader;
-    const StartWith = '\/\/\/@hook:';
+    const StartWith = '@hook:';
+//    const StartWith = '@hook:';
     const U_Method= 1;
     const U_Function= 2;
 
@@ -65,9 +66,16 @@ class Util
 
     public static function parseUserFunc($str)
     {
-        if (preg_match('/^' . self::StartWith . './', $str)) {
-            return preg_split("/(" . self::StartWith . ")| /", $str, -1, PREG_SPLIT_NO_EMPTY);
+        preg_match_all('#(?<=@hook:).*#', $str,$matched);
+
+        if($matched){
+            $func = [];
+            foreach ($matched[0] as $str){
+                $func =array_merge($func , preg_split("# |\|#",$str,-1,PREG_SPLIT_NO_EMPTY));
+            }
+            return $func;
         }
+
         return [];
     }
 
