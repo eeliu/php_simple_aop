@@ -25,11 +25,18 @@ class UtilTest extends TestCase
 
     public function testparseUserFunc()
     {
-        $str = '///@hook:\app\Foo::foo_p2 \app\Foo::foo_p1';
+        $strs = ['///@hook:\app\Foo::foo_p2 \app\Foo::foo_p1',
+            '//@hook:\app\Foo::foo_p2 \app\Foo::foo_p1',
+            '* @hook:\app\Foo::foo_p2 \app\Foo::foo_p1 '];
+        foreach ($strs as $str)
+        {
+            $ret =Util::parseUserFunc($str);
+            var_dump($ret);
+            self::assertEquals(serialize($ret),serialize(['\app\Foo::foo_p2','\app\Foo::foo_p1']));
+        }
 
         self::assertEquals(serialize(Util::parseUserFunc($str)),serialize(['\app\Foo::foo_p2','\app\Foo::foo_p1']));
 
-//        self::assertEquals(Util::parseUserFunc($str),['\app\Foo::foo_p2','\app\Foo::foo_p1']);
         self::assertEquals(count(Util::parseUserFunc('\app\Foo::foo_p2 \app\Foo::foo_p1')),0);
         self::assertEquals(count(Util::parseUserFunc('')),0);
         self::assertEquals(count(Util::parseUserFunc('I don\'t now nothing')),0);
