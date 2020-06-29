@@ -73,11 +73,17 @@ class PinpointDriver
 
         foreach ($this->clAr as $cl=> $info)
         {
+            if(empty($cl))
+            {
+                continue;
+            }
+
             $fullPath = Util::findFile($cl);
             if(!$fullPath)
             {
                 continue;
             }
+
             $osr = new OrgClassParse($fullPath,$cl,$info);
             foreach ($osr->classIndex as $clName=>$path)
             {
