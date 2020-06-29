@@ -85,7 +85,7 @@ More details please go to lib/pinpoint/test/Comparison/pinpoint/test
 ## Copyright
 
 ```
-Copyright 2020 NAVER Corp.
+Copyright 2020-present NAVER Corp.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
