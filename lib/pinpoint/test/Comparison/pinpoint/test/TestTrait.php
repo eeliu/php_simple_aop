@@ -10,7 +10,8 @@ trait TestTrait
     }
     function getReturnType()
     {
-        $traitTestPlugin_getReturnType_var = new traitTestPlugin(__METHOD__, $this);
+        $refArgs = array();
+        $traitTestPlugin_getReturnType_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_getReturnType_ret = null;
         try {
             $traitTestPlugin_getReturnType_var->onBefore();

@@ -14,7 +14,8 @@ class TestClass extends Proxied_TestClass
 {
     public function foo($a, $b, $v, $d) : array
     {
-        $traitTestPlugin_foo_var = new traitTestPlugin(__METHOD__, $this, $a, $b, $v, $d);
+        $refArgs = array(&$a, &$b, &$v, &$d);
+        $traitTestPlugin_foo_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_foo_ret = null;
         try {
             $traitTestPlugin_foo_var->onBefore();
@@ -28,7 +29,8 @@ class TestClass extends Proxied_TestClass
     }
     public function fooUseYield()
     {
-        $traitTestPlugin_fooUseYield_var = new traitTestPlugin(__METHOD__, $this);
+        $refArgs = array();
+        $traitTestPlugin_fooUseYield_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_fooUseYield_ret = null;
         try {
             $traitTestPlugin_fooUseYield_var->onBefore();
@@ -41,7 +43,8 @@ class TestClass extends Proxied_TestClass
     }
     public function fooNoReturn()
     {
-        $traitTestPlugin_fooNoReturn_var = new traitTestPlugin(__METHOD__, $this);
+        $refArgs = array();
+        $traitTestPlugin_fooNoReturn_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_fooNoReturn_ret = null;
         try {
             parent::fooNoReturn();
@@ -52,7 +55,8 @@ class TestClass extends Proxied_TestClass
     }
     public function fooNoReturnButReturn()
     {
-        $victim_fooNoReturnButReturn_var = new victim(__METHOD__, $this);
+        $refArgs = array();
+        $victim_fooNoReturnButReturn_var = new victim(__METHOD__, $this, $refArgs);
         $victim_fooNoReturnButReturn_ret = null;
         try {
             $victim_fooNoReturnButReturn_ret = parent::fooNoReturnButReturn();
@@ -64,7 +68,8 @@ class TestClass extends Proxied_TestClass
     }
     public final function fooNaughtyFinal($a, $b, $c)
     {
-        $over_fooNaughtyFinal_var = new over(__METHOD__, $this, $a, $b, $c);
+        $refArgs = array(&$a, &$b, &$c);
+        $over_fooNaughtyFinal_var = new over(__METHOD__, $this, $refArgs);
         $over_fooNaughtyFinal_ret = null;
         try {
             $over_fooNaughtyFinal_var->onBefore();
@@ -78,7 +83,8 @@ class TestClass extends Proxied_TestClass
     }
     protected function fooTestACPrivate()
     {
-        $traitTestPlugin_fooTestACPrivate_var = new traitTestPlugin(__METHOD__, $this);
+        $refArgs = array();
+        $traitTestPlugin_fooTestACPrivate_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_fooTestACPrivate_ret = null;
         try {
             $traitTestPlugin_fooTestACPrivate_ret = parent::fooTestACPrivate();
@@ -90,7 +96,8 @@ class TestClass extends Proxied_TestClass
     }
     public function fooTestCompatible(class1 $a, class2 $b, FooClass $c, FooClass4 $d)
     {
-        $traitTestPlugin_fooTestCompatible_var = new traitTestPlugin(__METHOD__, $this, $a, $b, $c, $d);
+        $refArgs = array(&$a, &$b, &$c, &$d);
+        $traitTestPlugin_fooTestCompatible_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_fooTestCompatible_ret = null;
         try {
             $traitTestPlugin_fooTestCompatible_ret = parent::fooTestCompatible($a, $b, $c, $d);
@@ -102,7 +109,8 @@ class TestClass extends Proxied_TestClass
     }
     public function returnNothing() : void
     {
-        $traitTestPlugin_returnNothing_var = new traitTestPlugin(__METHOD__, $this);
+        $refArgs = array();
+        $traitTestPlugin_returnNothing_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_returnNothing_ret = null;
         try {
             $traitTestPlugin_returnNothing_var->onBefore();
@@ -115,7 +123,8 @@ class TestClass extends Proxied_TestClass
     }
     public function returnNothing_1()
     {
-        $traitTestPlugin_returnNothing_1_var = new traitTestPlugin(__METHOD__, $this);
+        $refArgs = array();
+        $traitTestPlugin_returnNothing_1_var = new traitTestPlugin(__METHOD__, $this, $refArgs);
         $traitTestPlugin_returnNothing_1_ret = null;
         try {
             $traitTestPlugin_returnNothing_1_var->onBefore();
