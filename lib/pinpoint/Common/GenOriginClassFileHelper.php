@@ -95,6 +95,23 @@ class GenOriginClassFileHelper extends ClassFile
         $this->handleEndTraversFunc   = 'handleAfterTraversTrait';
     }
 
+
+    public static function convertParms2RefArray($params)
+    {
+        assert(is_array($params));
+
+        $items =[];
+        foreach ($params as $param)
+        {
+            $var = new Node\Expr\Variable($param->name);
+            $item = new Node\Expr\ArrayItem($var,NULL,true);
+            $items[] = $item;
+        }
+        $arNode =new  Node\Expr\Array_($items);
+
+        return $arNode;
+    }
+
     public static function convertParamsName2Arg($params)
     {
         assert(is_array($params));
@@ -107,13 +124,6 @@ class GenOriginClassFileHelper extends ClassFile
 
             $var = new Node\Expr\Variable($param->name);
             $arg = new Node\Arg($var);
-
-//            if($param->byRef)
-//                $arg->byRef = true;
-//            if($param->variadic)
-//                $arg-> = true;
-
-
 
             $args [] = $arg;
         }
@@ -171,18 +181,22 @@ class GenOriginClassFileHelper extends ClassFile
         }else{
             $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
         }
-
-        $pluginArgs  = array_merge([$funcVar,$selfVar],GenOriginClassFileHelper::convertParamsName2Arg($node->params));
-
+        
         $thisMethod->addParams($node->params);
         if($node->returnType){
             $thisMethod->setReturnType($node->returnType);
         }
+        
+        /// $refArgs = [&$a, &$b, &$v, &$d];
+        $assignNode = new Node\Expr\Assign(new Node\Expr\Variable('refArgs'),GenOriginClassFileHelper::convertParms2RefArray($node->params));
+        $thisMethod->addStmt($assignNode);
 
+        /// $var = new CommonPlugins(__FUNCTION__,self,$refArgs);
         $varName = $className.'_'.$thisFuncName.'_var';
         $retName = $className.'_'.$thisFuncName.'_ret';
+       
+        $pluginArgs = [$funcVar,$selfVar,new Node\Arg(new Node\Expr\Variable('refArgs'))];
 
-        /// $var = new CommonPlugins(__FUNCTION__,self,$p);
         $newPluginsStm = new Node\Expr\Assign(new Node\Expr\Variable($varName),
             new Node\Expr\New_(new Node\Name($className), $pluginArgs));
 
@@ -326,7 +340,11 @@ class GenOriginClassFileHelper extends ClassFile
             $selfVar = new Node\Arg(new Node\Expr\Variable('this'));
         }
 
-        $pluginArgs  = array_merge([$funcVar,$selfVar],GenOriginClassFileHelper::convertParamsName2Arg($node->params));
+        /// $refArgs = [&$a, &$b, &$v, &$d];
+        $assignNode = new Node\Expr\Assign(new Node\Expr\Variable('refArgs'),GenOriginClassFileHelper::convertParms2RefArray($node->params));
+        $thisMethod->addStmt($assignNode);
+
+        $pluginArgs  = [$funcVar,$selfVar,new Node\Arg(new Node\Expr\Variable('refArgs'))];
 
         $thisMethod->addParams($node->params);
         if($node->returnType){
