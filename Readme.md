@@ -7,9 +7,14 @@ Change configuration file in PHP/pinpoint_php_example/composer.json
 
 ```Json
     "require": {
-        "eeliu/php_simple_aop": "v0.2.4"
+        "eeliu/php_simple_aop": "the latest"
     }
 ```
+
+> Latest
+
+PHP7: `v0.2.5`
+PHP5: `v0.3.1`
 
 ### Write your plugins
 This is a plugin template for reference.
@@ -63,7 +68,10 @@ define('AOP_CACHE_DIR',__DIR__.'/Cache/');
 // Your plugins directory: All plugins must have a suffix "Plugin.php",as "CommonPlugin.php mysqlPlugin.php RPCPlugin.php"
 define('PLUGINS_DIR',__DIR__.'/../Plugins/');
 // since 0.2.3 supports user filter when loadering a class.
-// define('USER_DEFINED_CLASS_MAP_IMPLEMENT','\Plugins\ClassMapInFile.php');
+define('USER_DEFINED_CLASS_MAP_IMPLEMENT','\Plugins\ClassMapInFile.php');
+// since 0.2.5+ PINPOINT_ENV = dev, auto_pinpointed.php will generate Cache/* on every request. 
+// Recommended in debug mode.
+define('PINPOINT_ENV','dev');
 // Use php_simple_aop auto_pinpointed.php instead of vendor/autoload.php
 require_once __DIR__. '/../vendor/eeliu/php_simple_aop/auto_pinpointed.php';
 
@@ -85,7 +93,7 @@ More details please go to lib/pinpoint/test/Comparison/pinpoint/test
 ## Copyright
 
 ```
-Copyright 2020 NAVER Corp.
+Copyright 2020-present NAVER Corp.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
