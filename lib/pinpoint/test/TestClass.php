@@ -6,8 +6,13 @@ use App\Class1;
 use App\Class2;
 use App\Class3 as FooClass,App\Class4 as FooClass4;
 
-class TestClass
+abstract class TestClass
 {
+    public  function __construct($a,$b,$c)
+    {
+
+    }
+
     public function foo($a,$b,$v,$d) :array
     {
         echo date("y-m-d");

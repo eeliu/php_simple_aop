@@ -70,7 +70,8 @@ class ClassParseTest extends TestCase
             'fooTestACPrivate' =>[4,'pinpoint\\test','traitTestPlugin'],
             'fooTestCompatible'=>[4,'pinpoint\\test','traitTestPlugin'],
             'returnNothing'=>[7,'pinpoint\\test','traitTestPlugin'],
-            'returnNothing_1'=>[7,'pinpoint\\test','traitTestPlugin']
+            'returnNothing_1'=>[7,'pinpoint\\test','traitTestPlugin'],
+            '__construct'=>[7,'pinpoint\\test','traitTestPlugin']
         ];
 
 

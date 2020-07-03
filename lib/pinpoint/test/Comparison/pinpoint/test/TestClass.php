@@ -10,8 +10,21 @@ use pinpoint\test\Proxied_TestClass;
 use pinpoint\test\traitTestPlugin;
 use pinpoint\test\burden\depress\herb\e\e\f\longNp\victim;
 use \over;
-class TestClass extends Proxied_TestClass
+abstract class TestClass extends Proxied_TestClass
 {
+    public function __construct($a, $b, $c)
+    {
+        $traitTestPlugin___construct_var = new traitTestPlugin(__METHOD__, $this, $a, $b, $c);
+        $traitTestPlugin___construct_ret = null;
+        try {
+            $traitTestPlugin___construct_var->onBefore();
+            parent::__construct($a, $b, $c);
+            $traitTestPlugin___construct_var->onEnd($traitTestPlugin___construct_ret);
+        } catch (\Exception $e) {
+            $traitTestPlugin___construct_var->onException($e);
+            throw $e;
+        }
+    }
     public function foo($a, $b, $v, $d) : array
     {
         $traitTestPlugin_foo_var = new traitTestPlugin(__METHOD__, $this, $a, $b, $v, $d);
