@@ -91,10 +91,7 @@ class PinpointDriver
             }
         }
 
-        if( !defined('PINPOINT_ENV') || stristr(PINPOINT_ENV,"dev") === false)
-        {
-            $classMap->persistenceClassMapping();
-        }
+        $classMap->persistenceClassMapping();
 
         PinpointClassLoader::init($classMap);
 
