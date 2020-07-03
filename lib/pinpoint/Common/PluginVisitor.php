@@ -48,7 +48,7 @@ class PluginVisitor extends NodeVisitorAbstract
 
             foreach ($funArray as $func)
             {
-                $this->iParser->insertFunc($func,$mode);
+                $this->iParser->insertFunc(trim($func),$mode);
             }
        }
     }
