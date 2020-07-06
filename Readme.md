@@ -1,3 +1,7 @@
+## This repository had migrated to naver/php-simple-aop, please goto [naver/php-simple-aop](https://github.com/naver/php-simple-aop) for the latest.
+
+NOT `UPDATE` ANY MORE
+
 [![Build Status](https://travis-ci.com/eeliu/php_simple_aop.svg?branch=master)](https://travis-ci.com/eeliu/php_simple_aop)
 
 ##  How to Use 
